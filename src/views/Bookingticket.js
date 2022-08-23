@@ -21,7 +21,7 @@ function Bookingticket() {
   const [arrseatdow, setarrseatdow] = useState()
 
 
-
+const [dataSeatDown, setDataSeatDown] = useState([])
 
   const getAllManageXes = async () => {
 
@@ -40,7 +40,7 @@ function Bookingticket() {
     }
     else {
       let df = date + "T00:00:00.000Z"
-      console.log('djaeeeeeeehd', df)
+      // console.log('djaeeeeeeehd', df)
 
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
@@ -59,7 +59,7 @@ function Bookingticket() {
 
     getAllManageXes();
 
-  });
+  },[]);
 
 
 
@@ -155,12 +155,15 @@ function Bookingticket() {
 
   const getseatdoww = async () => {
 
-    let data = <BookingSeat arr={arrseatdow} />
-
+    let data = <BookingSeat arr={arrseatdow} handleSendData={(data)=>handleGetData(data)} />
     setdataseat(data)
 
   }
-
+  const handleGetData = (data) => {
+    setDataSeatDown(data)
+    console.log("test",data);
+    // arr data down seat
+  }
   return (
     <>
       <Container fluid>
