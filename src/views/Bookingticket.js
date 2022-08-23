@@ -26,7 +26,8 @@ function Bookingticket() {
   const getAllManageXes = async () => {
     if (date) {
       let df = date + "T00:00:00.000Z"
-      console.log('getxeday', df)
+      console.log('djaeeeeeeehd', df)
+
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
         setarrmanagexep(response.manageCar)
@@ -40,7 +41,7 @@ function Bookingticket() {
     getseatdow();
     getseatUP();
 
-
+    getAllManageXes();
 
   });
 
