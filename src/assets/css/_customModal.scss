@@ -1,0 +1,72 @@
+.modal-header {
+
+    align-items: center;
+    padding: 21px 16px !important;
+    background-color: #6679ca;
+
+    .modal-title.h4 {
+        margin: 0;
+    }
+
+
+
+}
+
+.modal.show .modal-dialog {
+    transform: translate(0, 0%);
+}
+
+label.form-label {
+    display: flex;
+
+    .sao {
+        padding-left: 6px;
+        font-size: 20px;
+        margin: 0;
+        color: red;
+    }
+}
+
+
+
+
+.ladd {
+    align-items: center;
+
+    .dangchon {
+        width: 14px;
+        /* padding-top: 14px; */
+        height: 14px;
+        background-color: yellow;
+        margin-right: 5px;
+    }
+
+    .dadat {
+        width: 14px;
+        /* padding-top: 14px; */
+        height: 14px;
+        background-color: rgb(139, 6, 6);
+        margin: 0 5px;
+
+    }
+
+    .controng {
+        width: 14px;
+        /* padding-top: 14px; */
+        height: 14px;
+        background-color: rgb(53, 100, 243);
+        margin-left: 5px;
+
+    }
+
+    label.form-label {
+        margin: 0 !important;
+        height: 40px;
+        line-height: 40px;
+
+
+
+    }
+
+
+}

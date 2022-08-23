@@ -65,7 +65,6 @@ bootstrap           3.3.7   →    4.6.0
 node-sass          4.12.0   →   4.14.1
 react              16.8.6   →   17.0.1
 react-bootstrap    0.32.4   →    1.4.3
-react-chartist     0.13.3   →   0.14.3
 react-dom          16.8.6   →   17.0.1
 react-router        5.0.0   →    5.2.0
 react-router-dom    5.0.0   →    5.2.0
@@ -79,7 +78,7 @@ typescript          3.4.3   →    4.1.3
 _The following warnings will appear when running the installation command, but they do not affect the UI or the functionality of the product (they will be solved in our next update):_
 
 ```
-npm WARN react-chartist@0.14.3 requires a peer of react@^0.14.9 || ^15.0.0 || ^16.0.0 but none is installed. You must install peer dependencies yourself.
+
 npm WARN react-popper@1.3.7 requires a peer of react@0.14.x || ^15.0.0 || ^16.0.0 but none is installed. You must install peer dependencies yourself.
 npm WARN create-react-context@0.3.0 requires a peer of react@^0.14.0 || ^15.0.0 || ^16.0.0 but none is installed. You must install peer dependencies yourself.
 ```
@@ -135,7 +134,7 @@ const localizer = momentLocalizer(moment);
 - Deleted noCaret from NavDropdown components
 - Replace Navbar fluid with Navbar → Container fluid
 - Add fontawesome as dependencie instead of font link insde public/index.html, it is now imported insde src/index.js
-- In addition to these changes, we’ve chaned the structure of the pages and components as well to match those from the HTML version of the product: https://www.creative-tim.com/product/light-bootstrap-dashboard
+- In addition to these changes, we’ve chaned the structure of the pages and components as well to match those from the HTML version of the 
 
 ## [1.3.0] 2019-05-03
 
@@ -154,16 +153,7 @@ const localizer = momentLocalizer(moment);
 - Renamed `src/components/Navbars/Header.jsx` to `src/components/Navbars/AdminNavbar.jsx`
 - Renamed `src/components/Navbars/HeaderLinks.jsx` to `src/components/Navbars/AdminNavbarLinks.jsx`
 - Changes caused by running [the prettier command](https://prettier.io/docs/en/install.html) for _.jsx_, _.js_, _.html_ and _.css_ files
-- Changed our buggy routing system, now it should work flawlessly, for more info, please refer to our [live docs here](https://demos.creative-tim.com/light-bootstrap-dashboard-react/#/documentation/routing-system)
-- Solved
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/48
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/47
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/34
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/30
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/19
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/17
-  - https://github.com/creativetimofficial/light-bootstrap-dashboard-react/issues/15
-- Removed `.env` file and replaced it with `jsconfig.json`
+- Changed our buggy routing system, now it should work flawlessly, for more info, please refer to our [live docs here](https://demos.
 - Small bug fixes
 
 ### Removed dependencies/components
@@ -187,7 +177,6 @@ const localizer = momentLocalizer(moment);
 - node-sass 4.6.1 → 4.12.0
 - react 16.2.0 → 16.8.6
 - react-bootstrap 0.32.1 → 0.32.4
-- react-chartist 0.13.1 → 0.13.3
 - react-dom 16.2.0 → 16.8.6
 - react-router-dom 4.2.2 → 5.0.0
 - react-scripts 1.1.1 → 3.0.0
@@ -220,7 +209,6 @@ const localizer = momentLocalizer(moment);
 - `npm-run-all@4.1.1` to `npm-run-all@4.1.2`
 - `react@15.6.1` to `react@16.2.0`
 - `react-bootstrap@0.31.1` to `react-bootstrap@0.32.1`
-- `react-chartist@0.13.0` to `react-chartist@0.13.1`
 - `react-dom@15.6.1` to `react-dom@16.2.0`
 - `react-notification-system@0.2.15` to `react-notification-system@0.2.17`
 - `react-router-dom@4.1.2` to `react-router-dom@4.2.2`

@@ -1,49 +1,180 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+import { createNewmap, getALLMap } from '../services/carSevice';
 
 // react-bootstrap components
-import { Badge, Button, Navbar, Nav, Container } from "react-bootstrap";
+import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
 
 function Maps() {
-  const mapRef = React.useRef(null);
-  React.useEffect(() => {
-    let google = window.google;
-    let map = mapRef.current;
-    let lat = "40.748817";
-    let lng = "-73.985428";
-    const myLatlng = new google.maps.LatLng(lat, lng);
-    const mapOptions = {
-      zoom: 13,
-      center: myLatlng,
-      scrollwheel: false,
-      zoomControl: true,
-    };
 
-    map = new google.maps.Map(map, mapOptions);
 
-    const marker = new google.maps.Marker({
-      position: myLatlng,
-      map: map,
-      animation: google.maps.Animation.DROP,
-      title: "Light Bootstrap Dashboard PRO React!",
-    });
+  const [showroadmap, setShowroadmap] = useState(false);
 
-    const contentString =
-      '<div class="info-window-content"><h2>Light Bootstrap Dashboard PRO React</h2>' +
-      "<p>A premium Admin for React-Bootstrap, Bootstrap, React, and React Hooks.</p></div>";
 
-    const infowindow = new google.maps.InfoWindow({
-      content: contentString,
-    });
 
-    google.maps.event.addListener(marker, "click", function () {
-      infowindow.open(map, marker);
-    });
-  }, []);
+
+
+  const [to, setto] = useState()
+  const [from, setfrom] = useState()
+
+
+
+  const [arrmap, setarrmap] = useState()
+
+
+
+
+  const handleCloseroadmap = () => setShowroadmap(false);
+  const handleShowroadmap = () => setShowroadmap(true);
+
+
+
+  const createNewmaps = async (data) => {
+    try {
+      let response = await createNewmap(data);
+      if (response && response.errCode !== 0) {
+        alert(' xa da ton tai ')
+      } else {
+        await this.getAllCars();
+        handleClosecar();
+
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+
+
+  const handleCreatemap = () => {
+
+    let mapp = {
+      to: to,
+      from: from
+
+    }
+
+    createNewmaps(mapp);
+
+
+  }
+
+
+
+
+  useEffect(() => {
+
+
+    getAllmaps();
+
+  });
+
+
+
+  const getAllmaps = async () => {
+    let response = await getALLMap('ALL')
+    if (response && response.errCode === 0) {
+      setarrmap(response.roadmaps)
+
+    }
+  }
+
+
+
+
   return (
     <>
-      <div className="map-container">
-        <div id="map" ref={mapRef}></div>
-      </div>
+
+      <Container fluid>
+        <Row>
+          <Col md="12">
+            <Card>
+              <Card.Header>
+                <Card.Title as="h4">Danh sách tuyến đường</Card.Title>
+
+                <Button variant="primary" size="sm" onClick={handleShowroadmap} active>
+                  Thêm Quảng Đường
+                </Button>
+
+
+              </Card.Header>
+              <Card.Body className="all-icons">
+                <Table striped bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>stt</th>
+                      <th>Nơi đi </th>
+                      <th>Nơi đến</th>
+                      <th>Ngày tạo</th>
+
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {arrmap && arrmap.map((item, index) => {
+                      return (
+                        <tr key={index + 1}>
+                          <td>{index}</td>
+                          <td>{item.from}</td>
+                          <td>{item.to}</td>
+                          <td>{item.createdAt}</td>
+
+                        </tr>
+                      )
+
+                    })
+                    }
+
+
+                  </tbody>
+                </Table>
+
+
+                <Modal show={showroadmap} onHide={handleCloseroadmap}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Thêm Quảng đường mới</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Nơi đi</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="vd: Đắk Lắk"
+                          autoFocus
+                          onChange={(e) => setfrom(e.target.value)}
+                        ></Form.Control>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
+                        <Form.Label>Nơi đến</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Đà Nẵng"
+                          autoFocus
+                          onChange={(e) => setto(e.target.value)}
+                        ></Form.Control>
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseroadmap}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleCreatemap}>
+                      Lưu
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+
+
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }
