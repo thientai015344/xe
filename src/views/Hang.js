@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
-
+import { getALLManageXe } from '../services/carSevice';
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form, } from "react-bootstrap";
 import { CreateNewsigns, getALLTypeHang, CreateNewsignments, getAllsignments } from '../services/carSevice';
@@ -26,6 +26,10 @@ function Hang() {
   const [price, setprice] = useState('');
 
   const [arrguihang, setarrguihang] = useState()
+  const [arrxehang, setarrxehang] = useState()
+  const [idcarhang, setidcarhang] = useState()
+
+
 
 
 
@@ -76,6 +80,26 @@ function Hang() {
 
 
 
+  const getAllxehang = async () => {
+
+    if (ob != "object") {
+
+      let df = date + "T00:00:00.000Z"
+      console.log('djaeeeeeeehd', df)
+
+      let response = await getALLManageXe(df)
+      if (response && response.errCode === 0) {
+        setarrxehang(response.manageCar)
+      }
+
+    }
+
+  }
+
+
+
+
+
 
 
   const getAllsignment = async () => {
@@ -95,9 +119,6 @@ function Hang() {
 
             let num = track.date
             let arr = num.toString().split("T")
-
-            console.log(arr[0])
-
             date = arr[0].split("-").reverse().join("-");
           }
           return { id: track.id, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, nametypecommodities: track.typecommodity.nametypecommodities }
@@ -337,6 +358,25 @@ function Hang() {
 
                           }
                         />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3 ">
+                        <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
+                        <Form.Select id="selectCar"
+                          value={idcarhang}
+                          onChange={e => {
+                            setidcarhang(e.target.value);
+                          }}
+                        >
+                          <option>Chọn xe gửi</option>
+                          {arrxehang && arrxehang.map((item, index) => {
+                            console.log('item', item)
+                            return (
+                              <option key={index} value={item.id}>{item.car.platesCar}</option>
+                            )
+                          })
+                          }
+                        </Form.Select>
                       </Form.Group>
 
                       <div className="d-flex">

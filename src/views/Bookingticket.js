@@ -24,29 +24,12 @@ function Bookingticket() {
 
 
   const getAllManageXes = async () => {
-
-    var ob = typeof (date);
-
-    if (ob === "object") {
-
-
-      let response = await getALLManageXe('ALL')
-      if (response && response.errCode === 0) {
-        setarrmanagexep(response.manageCar)
-
-
-      }
-
-    }
-    else {
+    if (date) {
       let df = date + "T00:00:00.000Z"
-      console.log('djaeeeeeeehd', df)
-
+      console.log('getxeday', df)
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
         setarrmanagexep(response.manageCar)
-
-
       }
     }
   }
@@ -57,7 +40,7 @@ function Bookingticket() {
     getseatdow();
     getseatUP();
 
-    getAllManageXes();
+
 
   });
 
@@ -92,15 +75,30 @@ function Bookingticket() {
   const saveticket = () => {
     let userId = sessionStorage.getItem("userId");
 
-    let ticket = {
-      nameClient: fName,
-      phoneNumber: sdt,
-      price: frice,
-      ManegeId: idmanage,
-      userId: userId,
-    }
+    const current = new Date();
+    const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
 
-    createNewtickets(ticket)
+
+    let datecho = new Date(ngay);
+    let datenow = new Date(datenox);
+
+    if (datenow < datecho) {
+
+      alert('không được chọn ngày nhỏ hơn ngày hiện tại')
+
+    }
+    else {
+
+      let ticket = {
+        nameClient: fName,
+        phoneNumber: sdt,
+        price: frice,
+        ManegeId: idmanage,
+        userId: userId,
+      }
+
+      createNewtickets(ticket)
+    }
 
   }
 

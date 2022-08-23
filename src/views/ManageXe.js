@@ -3,6 +3,7 @@ import "../assets/css/_customModal.scss";
 import { getALLCar, getALLManageXe, createNewManageXe, getALLMap } from '../services/carSevice';
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
+import { data } from "jquery";
 
 function ManageXe() {
 
@@ -58,20 +59,46 @@ function ManageXe() {
   const handleCreamanagecar = () => {
 
     let userId = sessionStorage.getItem("userId");
-
-    let managecar = {
-      date: datenox,
-      carId: idcar,
-      roadmapsId: idlacation,
-      userId: userId,
+    const current = new Date();
+    const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
 
 
+    let datecho = new Date(ngay);
+    let datenow = new Date(datenox);
+
+    if (datenow < datecho) {
+
+      alert('không được chọn ngày nhỏ hơn ngày hiện tại')
+
+    }
+    else {
+      let managecar = {
+        date: datenox,
+        carId: idcar,
+        roadmapsId: idlacation,
+        userId: userId,
+      }
+
+      createNewManageXes(managecar);
 
     }
 
-    console.log('data mabna', managecar)
 
-    createNewManageXes(managecar);
+
+    // let managecar = {
+    //   date: datenox,
+    //   carId: idcar,
+    //   roadmapsId: idlacation,
+    //   userId: userId,
+
+
+
+    // }
+
+
+
+
+    // createNewManageXes(managecar);
 
 
   }
@@ -109,7 +136,7 @@ function ManageXe() {
           let num = track.date
           let arr = num.toString().split("T")
 
-          console.log(arr[0])
+
 
           date = arr[0].split("-").reverse().join("-");
         }
