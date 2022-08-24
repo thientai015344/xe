@@ -112,6 +112,7 @@ function Notifications() {
 
 
       let convert = response.commoditys && response.commoditys.map(track => {
+        console.log('cut', track)
         let createdAt = '';
 
         if (track.createdAt) {
@@ -153,7 +154,6 @@ function Notifications() {
                   <thead>
                     <tr>
                       <th>stt</th>
-                      <th>Biển Số</th>
                       <th>nội dung chi</th>
                       <th>số tiền</th>
                       <th>Xe</th>
@@ -163,11 +163,9 @@ function Notifications() {
                   </thead>
                   <tbody>
                     {arrchi && arrchi.map((item, index) => {
-                      console.log('d', item)
                       return (
                         <tr key={index + 1}>
                           <td>{index}</td>
-                          <td>{item.commonCarId}</td>
                           <td>{item.descriptioncommodities}</td>
                           <td>{item.price}</td>
                           <td>{item.namecar}</td>
