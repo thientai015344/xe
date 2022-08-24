@@ -20,9 +20,24 @@ function Bookingticket() {
 
   const [arrseatup, setarrseatup] = useState()
   const [arrseatdow, setarrseatdow] = useState()
+  const [arrselect, setarrarrselect] = useState()
+
+
 
 
   const [dataseat, setdataseat] = useState([])
+
+  const dataselected = () => {
+
+    let conve = arrve && arrve.map(track => {
+
+      return { seat: track.seat }
+    })
+
+    setarrarrselect(conve)
+  }
+
+
 
 
   const getves = async (id) => {
