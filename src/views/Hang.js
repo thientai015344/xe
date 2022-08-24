@@ -9,10 +9,16 @@ import { CreateNewsigns, getALLTypeHang, CreateNewsignments, getAllsignments } f
 function Hang() {
   const [showHang, setShowHang] = useState(false);
 
-  const [showGuiHang, setShowGuiHang] = useState(false);
+  const [showGuiHang1, setShowGuiHang1] = useState(false);
+  const [showGuiHang2, setShowGuiHang2] = useState(false);
+
 
 
   const [date, setDate] = useState(new Date());
+
+  const [dategui, setDategui] = useState(new Date());
+
+
   const [loaihang, setloaihang] = useState('');
   const [idloaihang, setidloaihang] = useState('');
 
@@ -37,19 +43,39 @@ function Hang() {
   const handleCloseHang = () => setShowHang(false);
   const handleShowHang = () => setShowHang(true);
 
-  const handleCloseGuiHang = () => setShowGuiHang(false);
-  const handleShowGuiHang = () => {
+  const handleCloseGuiHang1 = () => { setShowGuiHang1(false) };
+  const handleShowGuiHang1 = () => {
 
 
-    setShowGuiHang(true)
+    setShowGuiHang1(true)
     getALLTypeHangs();
 
   };
 
+  const handleCloseGuiHang2 = () => setShowGuiHang2(false);
+  const handleShowGuiHang2 = () => { setShowGuiHang2(true) };
+
+
+  const tieptuc = async () => {
+
+    if (!idcarhang) {
+      alert('vui lòng chọn xe để đặt vé')
 
 
 
+    } else {
+      if (idloaihang == '') {
+        alert('vui lòng chọn loại hàng')
+        console.log('dd', namehang + 'pr', price)
 
+
+      }
+      else {
+        handleShowGuiHang2();
+        handleCloseGuiHang1();
+      }
+    }
+  }
   const getALLTypeHangs = async () => {
     let response = await getALLTypeHang('ALL')
     if (response && response.errCode === 0) {
@@ -80,11 +106,29 @@ function Hang() {
 
 
 
-  const getAllxehang = async () => {
+  const getAllxehang = async (xeww) => {
 
-    if (ob != "object") {
 
-      let df = date + "T00:00:00.000Z"
+    const current = new Date();
+    const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
+
+
+    let datecho = new Date(ngay);
+    let datenow = new Date(xeww);
+
+    if (datenow < datecho) {
+
+      console.log('data nhap', datenow)
+      console.log('data so', datenow)
+
+
+      alert('không được chọn ngày nhỏ hơn ngày hiện tại')
+
+    }
+
+    else {
+
+      let df = xeww + "T00:00:00.000Z"
       console.log('djaeeeeeeehd', df)
 
       let response = await getALLManageXe(df)
@@ -92,7 +136,9 @@ function Hang() {
         setarrxehang(response.manageCar)
       }
 
+
     }
+
 
   }
 
@@ -168,47 +214,49 @@ function Hang() {
 
 
 
-
-
-
   const CreateNewsignment = async () => {
     let userId = sessionStorage.getItem("userId");
 
-    let datahang = {
 
 
-      name: namehang,
-      nameUserSend: namesend,
-      phonenumberUserSend: sdtsend,
-      nameUserGet: nameget,
-      phonenumberUserGet: sdtget,
-      typecommoditiesId: idloaihang,
-      price: price,
-      date: date,
-      userId: userId,
+    if (namehang == '' || price == '' || namesend == '' || sdtsend == '' || nameget == '' || sdtget == '') {
+      alert('vui lòng nhập đầy đủ thông tin')
     }
-    try {
-      let response = await CreateNewsignments(datahang);
-      if (response && response.errCode !== 0) {
-        alert(' xa da ton tai ')
-      } else {
-        alert('thêm loai hang thanh cong')
-        getAllsignment();
-        handleCloseGuiHang();
+    else {
 
+      let datahang = {
+
+
+        name: namehang,
+        nameUserSend: namesend,
+        phonenumberUserSend: sdtsend,
+        nameUserGet: nameget,
+        phonenumberUserGet: sdtget,
+        typecommoditiesId: idloaihang,
+        price: price,
+        date: date,
+        userId: userId,
       }
-    } catch (error) {
-      console.log(error);
+      try {
+        let response = await CreateNewsignments(datahang);
+        if (response && response.errCode !== 0) {
+          alert(' xa da ton tai ')
+        } else {
+          alert('thêm loai hang thanh cong')
+          getAllsignment();
+          handleCloseGuiHang();
+
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
+
+
+
+
 
   }
-
-
-
-
-
-
-
 
 
 
@@ -230,7 +278,7 @@ function Hang() {
                   Thêm Loại Hàng
                 </Button>
 
-                <Button variant="primary" size="sm" className="mr-3" onClick={handleShowGuiHang}  >
+                <Button variant="primary" size="sm" className="mr-3" onClick={handleShowGuiHang1}  >
                   Gửi Hàng
                 </Button>
 
@@ -310,7 +358,7 @@ function Hang() {
                   </Modal.Header>
                   <Modal.Body>
                     <Form>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                      <Form.Group className="mb-3">
                         <Form.Label>Loại hàng</Form.Label>
                         <Form.Control
                           type="text"
@@ -332,7 +380,7 @@ function Hang() {
 
 
 
-                <Modal show={showGuiHang} onHide={handleCloseGuiHang}>
+                <Modal show={showGuiHang1} onHide={handleCloseGuiHang1}>
                   <Modal.Header closeButton>
                     <Modal.Title>Gửi Hàng</Modal.Title>
 
@@ -348,11 +396,11 @@ function Hang() {
                           name="duedate"
 
                           placeholder="Due date"
-                          value={date}
-                          onChange={(e) => {
-                            setDate(e.target.value)
 
-                            getAllsignment()
+                          onChange={(e) => {
+                            setDategui(e.target.value)
+
+                            getAllxehang(e.target.value)
 
                           }
 
@@ -366,11 +414,11 @@ function Hang() {
                           value={idcarhang}
                           onChange={e => {
                             setidcarhang(e.target.value);
+
                           }}
                         >
                           <option>Chọn xe gửi</option>
                           {arrxehang && arrxehang.map((item, index) => {
-                            console.log('item', item)
                             return (
                               <option key={index} value={item.id}>{item.car.platesCar}</option>
                             )
@@ -381,7 +429,7 @@ function Hang() {
 
                       <div className="d-flex">
 
-                        <Form.Group className="mb-3 col-6" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3 col-6">
                           <Form.Label>Tên hàng <p className="sao">*</p></Form.Label>
                           <Form.Control
                             type="text"
@@ -390,7 +438,7 @@ function Hang() {
                           ></Form.Control>
                         </Form.Group>
 
-                        <Form.Group className="mb-3 col-6" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3 col-6">
                           <Form.Label htmlFor="selecttypehang">Loại Hàng</Form.Label>
                           <Form.Select as="select"
                             value={idloaihang}
@@ -422,8 +470,30 @@ function Hang() {
                         ></Form.Control>
 
                       </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseGuiHang1}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={tieptuc}>
+                      Tiếp tục
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+                <Modal show={showGuiHang2} onHide={handleCloseGuiHang2}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Gửi Hàng</Modal.Title>
+
+                  </Modal.Header>
+
+                  <Modal.Body>
+
+                    <Form>
+
                       <div className="d-flex">
-                        <Form.Group className="mb-3 col-6" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3 col-6">
                           <Form.Label>Người gửi <p className="sao">*</p></Form.Label>
                           <Form.Control
                             type="text"
@@ -432,7 +502,7 @@ function Hang() {
                           ></Form.Control>
                         </Form.Group>
 
-                        <Form.Group className="mb-3 col-6" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3 col-6">
                           <Form.Label>Sđt người gửi <p className="sao">*</p></Form.Label>
                           <Form.Control
                             type="text"
@@ -445,7 +515,7 @@ function Hang() {
 
                       <div className="d-flex">
 
-                        <Form.Group className="mb-3 col-6" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3 col-6">
                           <Form.Label>Người nhận<p className="sao">*</p></Form.Label>
                           <Form.Control
                             type="text"
@@ -453,7 +523,7 @@ function Hang() {
                             autoFocus
                           ></Form.Control>
                         </Form.Group>
-                        <Form.Group className="mb-3 col-6" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3 col-6">
                           <Form.Label>Sđt người nhận<p className="sao">*</p></Form.Label>
                           <Form.Control
                             type="text"
@@ -463,15 +533,14 @@ function Hang() {
                         </Form.Group>
                       </div>
 
-
                     </Form>
                   </Modal.Body>
                   <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseGuiHang}>
+                    <Button variant="secondary" onClick={handleCloseGuiHang2}>
                       Đóng
                     </Button>
                     <Button variant="primary" onClick={CreateNewsignment}>
-                      Lưu
+                      Tiep tuc
                     </Button>
                   </Modal.Footer>
                 </Modal>

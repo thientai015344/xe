@@ -1,318 +1,259 @@
-import React from "react";
-// react plugin for creating notifications over the dashboard
-import NotificationAlert from "react-notification-alert";
-// react-bootstrap components
+import React, { useEffect, useState } from "react";
+import "../assets/css/_customModal.scss";
+import { getALLCar, taochi, getchi } from '../services/carSevice';
+
 import {
-  Alert,
-  Badge,
   Button,
   Card,
   Modal,
-  Navbar,
-  Nav,
   Container,
   Row,
   Col,
+  Table,
+  Form,
 } from "react-bootstrap";
 
 function Notifications() {
-  const [showModal, setShowModal] = React.useState(false);
-  const notificationAlertRef = React.useRef(null);
-  const notify = (place) => {
-    var color = Math.floor(Math.random() * 5 + 1);
-    var type;
-    switch (color) {
-      case 1:
-        type = "primary";
-        break;
-      case 2:
-        type = "success";
-        break;
-      case 3:
-        type = "danger";
-        break;
-      case 4:
-        type = "warning";
-        break;
-      case 5:
-        type = "info";
-        break;
-      default:
-        break;
-    }
-    var options = {};
-    options = {
-      place: place,
-      message: (
-        <div>
-          <div>
-            Welcome to <b>Light Bootstrap Dashboard React</b> - a beautiful
-            freebie for every web developer.
-          </div>
-        </div>
-      ),
-      type: type,
-      icon: "nc-icon nc-bell-55",
-      autoDismiss: 7,
-    };
-    notificationAlertRef.current.notificationAlert(options);
+  const [showCar, setShowcar] = useState(false);
+  const handleClosecar = () => setShowcar(false);
+  const handleShowcar = () => {
+    setShowcar(true)
+    getAllCars();
   };
+  const [arrchi, setarrchi] = useState('');
+  const [arrcarchi, setarrcarchi] = useState('');
+
+
+  const [idcar, setidcar] = useState('');
+  const [descrtpt, setdescrtpt] = useState('');
+  const [price, setprice] = useState('');
+
+
+  const handleCreatecar = () => {
+
+
+
+
+    if (idcar == '' || descrtpt == '' || price == '') {
+      alert('chọn đầy đủ thông tin ạ')
+    }
+    else {
+
+      let chi = {
+        descriptioncommodities: descrtpt,
+        price: price,
+        commonCarId: idcar
+      }
+
+      taochis(chi);
+
+    }
+
+
+  }
+
+
+  const taochis = async (data) => {
+    try {
+      let response = await taochi(data);
+      if (response && response.errCode !== 0) {
+        alert(' xa da ton tai ')
+      } else {
+        alert(' them phieu chi thanh cong')
+        handleClosecar();
+        await this.getchis();
+
+      }
+      handleClosecar
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+  useEffect(() => {
+
+    getchis();
+
+
+  });
+
+
+
+  const getAllCars = async () => {
+    let response = await getALLCar('ALL')
+    if (response && response.errCode === 0) {
+      console.log('ddd', response.cars)
+
+      let convert = response.cars && response.cars.map(track => {
+        let createdAt = '';
+
+        if (track.createdAt) {
+
+          let num = track.createdAt
+          let arr = num.toString().split("T")
+
+
+          createdAt = arr[0].split("-").reverse().join("-");
+        }
+        return { id: track.id, platesCar: track.platesCar, createdAt: createdAt }
+      })
+
+      setarrcarchi(convert);
+
+    }
+  }
+
+
+  const getchis = async () => {
+    let response = await getchi('ALL')
+    if (response && response.errCode === 0) {
+
+
+      let convert = response.commoditys && response.commoditys.map(track => {
+        let createdAt = '';
+
+        if (track.createdAt) {
+
+          let num = track.createdAt
+          let arr = num.toString().split("T")
+
+
+          createdAt = arr[0].split("-").reverse().join("-");
+        }
+        return { id: track.id, descriptioncommodities: track.descriptioncommodities, price: track.price, namecar: track.car.platesCar, createdAt: createdAt }
+      })
+
+      setarrchi(convert);
+
+    }
+  }
+
+
+
+
+
+
   return (
     <>
-      <div className="rna-container">
-        <NotificationAlert ref={notificationAlertRef} />
-      </div>
       <Container fluid>
-        <Card>
-          <Card.Header>
-            <Card.Title as="h4">Notifications</Card.Title>
-            <p className="card-category">
-              Handcrafted by our friend and colleague{" "}
-              <a
-                href="https://github.com/EINazare"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Nazare Emanuel-Ioan
-              </a>
-              . Please checkout the{" "}
-              <a
-                href="https://github.com/creativetimofficial/react-notification-alert"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                full documentation.
-              </a>
-            </p>
-          </Card.Header>
-          <Card.Body>
-            <Row>
-              <Col md="6">
-                <h5>
-                  <small>Notifications Style</small>
-                </h5>
-                <Alert variant="info">
-                  <span>This is a plain notification</span>
-                </Alert>
-                <Alert variant="info">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span>This is a notification with close button.</span>
-                </Alert>
-                <Alert className="alert-with-icon" variant="info">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span
-                    data-notify="icon"
-                    className="nc-icon nc-bell-55"
-                  ></span>
-                  <span>
-                    This is a notification with close button and icon.
-                  </span>
-                </Alert>
-                <Alert className="alert-with-icon" variant="info">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span
-                    data-notify="icon"
-                    className="nc-icon nc-bell-55"
-                  ></span>
-                  <span>
-                    This is a notification with close button and icon and have
-                    many lines. You can see that the icon and the close button
-                    are always vertically aligned. This is a beautiful
-                    notification. So you don't have to worry about the style.
-                  </span>
-                </Alert>
-              </Col>
-              <Col md="6">
-                <h5>
-                  <small>Notification States</small>
-                </h5>
-                <Alert variant="primary">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span>
-                    <b>Primary -</b>
-                    This is a regular notification made with ".alert-primary"
-                  </span>
-                </Alert>
-                <Alert variant="info">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span>
-                    <b>Info -</b>
-                    This is a regular notification made with ".alert-info"
-                  </span>
-                </Alert>
-                <Alert variant="success">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span>
-                    <b>Success -</b>
-                    This is a regular notification made with ".alert-success"
-                  </span>
-                </Alert>
-                <Alert variant="warning">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span>
-                    <b>Warning -</b>
-                    This is a regular notification made with ".alert-warning"
-                  </span>
-                </Alert>
-                <Alert variant="danger">
-                  <button
-                    aria-hidden={true}
-                    className="close"
-                    data-dismiss="alert"
-                    type="button"
-                  >
-                    <i className="nc-icon nc-simple-remove"></i>
-                  </button>
-                  <span>
-                    <b>Danger -</b>
-                    This is a regular notification made with ".alert-danger"
-                  </span>
-                </Alert>
-              </Col>
-            </Row>
-            <br></br>
-            <br></br>
-            <div className="places-buttons">
-              <Row>
-                <Col className="offset-md-3 text-center" md="6">
-                  <Card.Title as="h4">Notifications Places</Card.Title>
-                  <p className="card-category">
-                    <small>Click to view notifications</small>
-                  </p>
-                </Col>
-              </Row>
-              <Row className="justify-content-center">
-                <Col lg="3" md="3">
-                  <Button block onClick={() => notify("tl")} variant="default">
-                    Top Left
-                  </Button>
-                </Col>
-                <Col lg="3" md="3">
-                  <Button block onClick={() => notify("tc")} variant="default">
-                    Top Center
-                  </Button>
-                </Col>
-                <Col lg="3" md="3">
-                  <Button block onClick={() => notify("tr")} variant="default">
-                    Top Right
-                  </Button>
-                </Col>
-              </Row>
-              <Row className="justify-content-center">
-                <Col lg="3" md="3">
-                  <Button block onClick={() => notify("bl")} variant="default">
-                    Bottom Left
-                  </Button>
-                </Col>
-                <Col lg="3" md="3">
-                  <Button block onClick={() => notify("bc")} variant="default">
-                    Bottom Center
-                  </Button>
-                </Col>
-                <Col lg="3" md="3">
-                  <Button block onClick={() => notify("br")} variant="default">
-                    Bottom Right
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-            <Row>
-              <Col className="text-center" md="12">
-                <h4 className="title">Modal</h4>
-                <Button
-                  className="btn-fill btn-wd"
-                  variant="info"
-                  onClick={() => setShowModal(true)}
-                >
-                  Launch Modal Mini
+        <Row>
+          <Col md="12">
+            <Card>
+              <Card.Header>
+                <Card.Title as="h4">Phiếu chi</Card.Title>
+
+                <Button variant="primary" size="sm" onClick={handleShowcar} active>
+                  Tạo phiếu chi
                 </Button>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-        {/* Mini Modal */}
-        <Modal
-          className="modal-mini modal-primary"
-          show={showModal}
-          onHide={() => setShowModal(false)}
-        >
-          <Modal.Header className="justify-content-center">
-            <div className="modal-profile">
-              <i className="nc-icon nc-bulb-63"></i>
-            </div>
-          </Modal.Header>
-          <Modal.Body className="text-center">
-            <p>Always have an access to your profile</p>
-          </Modal.Body>
-          <div className="modal-footer">
-            <Button
-              className="btn-simple"
-              type="button"
-              variant="link"
-              onClick={() => setShowModal(false)}
-            >
-              Back
-            </Button>
-            <Button
-              className="btn-simple"
-              type="button"
-              variant="link"
-              onClick={() => setShowModal(false)}
-            >
-              Close
-            </Button>
-          </div>
-        </Modal>
-        {/* End Modal */}
+              </Card.Header>
+              <Card.Body className="all-icons">
+                <Table striped bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>stt</th>
+                      <th>Biển Số</th>
+                      <th>nội dung chi</th>
+                      <th>số tiền</th>
+                      <th>Xe</th>
+                      <th>Ngày tạo</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {arrchi && arrchi.map((item, index) => {
+                      console.log('d', item)
+                      return (
+                        <tr key={index + 1}>
+                          <td>{index}</td>
+                          <td>{item.commonCarId}</td>
+                          <td>{item.descriptioncommodities}</td>
+                          <td>{item.price}</td>
+                          <td>{item.namecar}</td>
+                          <td>{item.createdAt}</td>
+                          {/* <td>
+                            <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
+                                <i className="fas fa-edit">
+                                </i></button>
+                            <button 
+                            className="btn-delete"
+                            onClick = {() =>{this.handleDelete(item)}}
+                            >
+                                <i 
+                            className="fas fa-trash">
+                                </i></button>
+                        </td> */}
+                        </tr>
+                      )
+
+                    })
+                    }
+
+
+                  </tbody>
+                </Table>
+
+                <Modal show={showCar} onHide={handleClosecar}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Thêm phiếu chi</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3 ">
+                        <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
+                        <Form.Select id="selectCar"
+                          value={idcar}
+                          onChange={e => {
+                            setidcar(e.target.value);
+                            getAllManageXes(e.target.value)
+                          }}
+                        >
+                          <option>Chọn xe </option>
+                          {arrcarchi && arrcarchi.map((item, index) => {
+                            return (
+                              <option key={index} value={item.id}>{item.platesCar}</option>
+                            )
+                          })
+                          }
+                        </Form.Select>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>nội dung chi tiền</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="vd: đổ xăng , ... , ...."
+                          autoFocus
+                          onChange={(e) => setdescrtpt(e.target.value)}
+                        ></Form.Control>
+                      </Form.Group>
+
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Giá tiền</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="2000000"
+                          autoFocus
+                          onChange={(e) => setprice(e.target.value)}
+                        ></Form.Control>
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClosecar}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleCreatecar}>
+                      Lưu
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
       </Container>
     </>
   );

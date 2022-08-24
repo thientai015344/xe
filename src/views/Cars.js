@@ -79,7 +79,7 @@ function Cars() {
           let num = track.createdAt
           let arr = num.toString().split("T")
 
-          console.log(arr[0])
+
 
           createdAt = arr[0].split("-").reverse().join("-");
         }
@@ -91,24 +91,6 @@ function Cars() {
     }
   }
 
-
-  // let convert = async (data) => {
-
-  //   data && data.map(track => {
-  //     let createdAt = '';
-
-  //     if (track.createdAt) {
-
-  //       let num = track.createdAt
-  //       let arr = num.toString().split("T")
-
-  //       console.log(arr[0])
-
-  //       createdAt = data.value.split("-").reverse().join("-");
-  //     }
-  //     return { id: track.id, platesCar: track.platesCar, createdAt: createdAt }
-  //   })
-  // }
 
 
   return (

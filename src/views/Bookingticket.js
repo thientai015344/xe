@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLManageXe, getALLSeat, createNewticket } from '../services/carSevice';
+import { getALLManageXe, getALLSeat, createNewticket, seatbook, getve } from '../services/carSevice';
 
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form, ButtonGroup } from "react-bootstrap";
@@ -14,19 +14,45 @@ function Bookingticket() {
   const [fName, setfName] = useState('');
   const [sdt, setsdt] = useState('');
   const [frice, setfrice] = useState('');
-  const [tofrice, settofrice] = useState('');
   const [idmanage, setidmanage] = useState('');
   const [arrmanagexe, setarrmanagexep] = useState()
+  const [arrve, setarrve] = useState()
+
   const [arrseatup, setarrseatup] = useState()
   const [arrseatdow, setarrseatdow] = useState()
 
 
+  const [dataseat, setdataseat] = useState([])
 
 
-  const getAllManageXes = async () => {
-    if (date) {
-      let df = date + "T00:00:00.000Z"
-      console.log('djaeeeeeeehd', df)
+  const getves = async (id) => {
+    if (id) {
+      let response = await getve(id)
+      if (response && response.errCode === 0) {
+
+        let conve = response.bookingseatxe && response.bookingseatxe.map(track => {
+          let num = '';
+          if (track.bookingseats.nameClient) {
+
+            num = track.bookingseats.nameClient
+
+
+          }
+
+          return { namekhach: num, sdt: track.bookingseats.phoneNumber, seat: track.bookingseats.seatbooks.seatId }
+        })
+
+        setarrve(conve)
+
+
+      }
+    }
+  }
+
+  const getAllManageXes = async (dated) => {
+    if (dated) {
+      let df = dated + "T00:00:00.000Z"
+
 
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
@@ -41,19 +67,43 @@ function Bookingticket() {
     getseatdow();
     getseatUP();
 
-    getAllManageXes();
-
-  });
+  }, []);
 
 
 
 
   let datainitia = 'Vui lòng chọn tầng'
 
-  const [dataseat, setdataseat] = useState(datainitia);
+  const [dataseatget, setdataseatget] = useState(datainitia);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+
+    const current = new Date();
+    const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
+
+
+    let datecho = new Date(ngay);
+    let datenow = new Date(date);
+
+    if (datenow < datecho) {
+
+      alert('không được chọn ngày nhỏ hơn ngày hiện tại')
+
+
+
+
+    } else if (idmanage == '') {
+      alert('vui lòng chọn xe để đặt vé')
+
+    }
+    else {
+
+      setShow(true)
+    }
+
+
+  };
 
   const handleClosefr = () => setShowfr(false);
   const handleShowfr = () => setShowfr(true);
@@ -75,32 +125,25 @@ function Bookingticket() {
 
   const saveticket = () => {
     let userId = sessionStorage.getItem("userId");
+    let i = dataseatget.length
 
-    const current = new Date();
-    const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
+    let totli = frice * i
+
+    console.log('ddf', totli)
 
 
-    let datecho = new Date(ngay);
-    let datenow = new Date(datenox);
 
-    if (datenow < datecho) {
 
-      alert('không được chọn ngày nhỏ hơn ngày hiện tại')
 
-    }
-    else {
-
-      let ticket = {
-        nameClient: fName,
-        phoneNumber: sdt,
-        price: frice,
-        ManegeId: idmanage,
-        userId: userId,
-      }
-
-      createNewtickets(ticket)
+    let ticket = {
+      nameClient: fName,
+      phoneNumber: sdt,
+      price: totli,
+      ManegeId: idmanage,
+      userId: userId,
     }
 
+    createNewtickets(ticket)
   }
 
 
@@ -112,6 +155,47 @@ function Bookingticket() {
       if (response && response.errCode !== 0) {
         alert('đã có lỗi xảy ra ')
       } else {
+
+        let result = [];
+
+        let id = response.id;
+
+        if (dataseatget && dataseatget.length > 0) {
+
+          dataseatget.map(key => {
+            let seat = {};
+            seat.bookingseatsId = id;
+            seat.seatId = key;
+            result.push(seat)
+
+          })
+
+
+        }
+
+        try {
+
+          let response = await seatbook(result);
+          if (response && response.errCode !== 0) {
+            alert('đã có lỗi xảy ra ')
+          } else {
+
+            alert('tao ve thanh cong')
+
+            getves();
+
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
+
+
+
+
+
+
+
         await this.getAllManageXe();
         handleClosefr();
 
@@ -145,7 +229,7 @@ function Bookingticket() {
 
   const getseatUPw = async () => {
 
-    let data = <BookingSeat arr={arrseatup} />
+    let data = <BookingSeat arr={arrseatup} handleSendData={(data) => handleGetData(data)} />
 
 
 
@@ -154,11 +238,16 @@ function Bookingticket() {
 
   const getseatdoww = async () => {
 
-    let data = <BookingSeat arr={arrseatdow} />
-
+    let data = <BookingSeat arr={arrseatdow} handleSendData={(data) => handleGetData(data)} />
     setdataseat(data)
 
   }
+
+  const handleGetData = (data) => {
+    setdataseatget(data)
+  }
+
+
 
   return (
     <>
@@ -180,7 +269,7 @@ function Bookingticket() {
                       onChange={(e) => {
                         setDate(e.target.value)
 
-                        getAllManageXes()
+                        getAllManageXes(e.target.value)
 
                       }
 
@@ -194,6 +283,7 @@ function Bookingticket() {
                       value={idmanage}
                       onChange={e => {
                         setidmanage(e.target.value);
+                        getves(e.target.value)
                       }}
                     >
                       <option>Chọn xe muốn đặt</option>
@@ -217,18 +307,24 @@ function Bookingticket() {
                   <thead>
                     <tr>
                       <th>stt</th>
-                      <th>Biển Số</th>
-                      <th>Tuyến đường</th>
+                      <th>Tên khách hàng</th>
+                      <th>Số điện thoại</th>
+                      <th>vị trí ghế</th>
+
 
                     </tr>
                   </thead>
                   <tbody>
-                    {arrmanagexe && arrmanagexe.map((item, index) => {
+                    {arrve && arrve.map((item, index) => {
+
                       return (
                         <tr key={index + 1}>
                           <td>{index}</td>
-                          <td>{item.car.platesCar}</td>
-                          <td>{item.roadmap.from}-{item.roadmap.to}</td>
+                          <td>{item.namekhach}</td>
+                          <td>{item.sdt}</td>
+                          <td>{item.seat}</td>
+
+
 
                           {/* <td>
                             <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >

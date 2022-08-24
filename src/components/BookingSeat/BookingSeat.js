@@ -1,17 +1,16 @@
 
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
 
 import '../../assets/css/sccSeats.scss'
 
-function BookingSeat({arr,handleSendData}) {
+function BookingSeat({ arr, handleSendData }) {
 
     const [selected, setSelected] = React.useState([]);
-    const [arrIdSelect, setArrIdSelect] = React.useState(selected);
 
-    const handleSelectSeat = (e,value) => {
-        if(e.target.checked) {
-            setSelected(prev => [...prev,value]);
+    const handleSelectSeat = (e, value) => {
+        if (e.target.checked) {
+            setSelected(prev => [...prev, value]);
         } else {
             const filter = selected.filter(item => item !== value)
             setSelected(filter)
@@ -20,7 +19,7 @@ function BookingSeat({arr,handleSendData}) {
     }
     useEffect(() => {
         handleSendData(selected)
-    },[selected])
+    }, [selected])
     return (
 
         <Container fluid>
@@ -30,7 +29,7 @@ function BookingSeat({arr,handleSendData}) {
                 {arr && arr.map((item, index) => {
                     return (
                         <li key={index} className="seat">
-                            <input type="checkbox" id={item.key} onChange={(e)=>handleSelectSeat(e,item.key)} />
+                            <input type="checkbox" id={item.key} onChange={(e) => handleSelectSeat(e, item.value)} />
                             <label htmlFor={item.key}>{item.value}</label>
                         </li>
 

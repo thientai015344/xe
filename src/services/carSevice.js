@@ -99,12 +99,25 @@ const getAllsignments = (inputId) => {
 }
 
 
+const seatbook = (data) => {
+    return axios.post('/api/create-new-seatbook', data);
+}
+
+const taochi = (data) => {
+    return axios.post('/api/create-new-commodity', data);
+}
 
 
 
+const getchi = (inputId) => {
+    return axios.get(`/api/get-all-commodity?id=${inputId}`)
+}
 
 
 
+const getve = (inputId) => {
+    return axios.get(`/api/get-all-seatbookxe?id=${inputId}`)
+}
 
 export {
     createNewmap,
@@ -122,5 +135,9 @@ export {
     getALLTypeHang,
     CreateNewsignments,
     getAllsignments,
+    seatbook,
+    taochi,
+    getchi,
+    getve,
 
 }

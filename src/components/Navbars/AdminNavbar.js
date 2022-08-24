@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
 
 import routes from "routes.js";
@@ -18,6 +18,18 @@ function Header() {
     };
     document.body.appendChild(node);
   };
+  const history = useHistory();
+  const logout = () => {
+
+    sessionStorage.removeItem('userId')
+
+
+    history.push("/")
+
+  }
+
+
+
 
   const getBrandText = () => {
     for (let i = 0; i < routes.length; i++) {
@@ -86,7 +98,14 @@ function Header() {
 
                 <Dropdown.Item
                   href="#pablo"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={(e) => {
+
+                    logout()
+
+                    e.preventDefault()
+                  }
+
+                  }
                 >
                   Another notification
                 </Dropdown.Item>
@@ -108,7 +127,11 @@ function Header() {
               <Nav.Link
                 className="m-0"
                 href="#pablo"
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  logout()
+
+                  e.preventDefault()
+                }}
               >
                 <span className="no-icon">Log out</span>
               </Nav.Link>

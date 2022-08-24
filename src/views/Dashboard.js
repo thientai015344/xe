@@ -1,7 +1,7 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 // react-bootstrap components
-import { Container,Form } from "react-bootstrap";
+import { Container, Form } from "react-bootstrap";
 import { Chart, registerables } from "chart.js";
 
 function Dashboard() {
@@ -64,15 +64,15 @@ function Dashboard() {
   return (
     <>
       <Container fluid>
-        <Form.Group className="mb-3 col-6" style={{float: "right", width: "200px"}}>
+        <Form.Group className="mb-3 col-6" style={{ float: "right", width: "200px" }}>
           <Form.Control
             type="date"
             name="duedate"
             placeholder="Due date"
-            // value={}
-            // onChange={(e) => {
-   
-            // }}
+          // value={}
+          // onChange={(e) => {
+
+          // }}
           />
         </Form.Group>
         <Line options={options} data={data} />
