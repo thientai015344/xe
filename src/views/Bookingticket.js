@@ -4,7 +4,8 @@ import { getALLManageXe, getALLSeat, createNewticket, seatbook, getve } from '..
 
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form, ButtonGroup } from "react-bootstrap";
-import BookingSeat from "components/BookingSeat/BookingSeat";
+import BookingSeatUp from "components/BookingSeat/BookingSeatUp";
+import BookingSeatDown from "components/BookingSeat/BookingSeatDown";
 
 function Bookingticket() {
   const [show, setShow] = useState(false);
@@ -16,13 +17,14 @@ function Bookingticket() {
   const [frice, setfrice] = useState('');
   const [idmanage, setidmanage] = useState('');
   const [arrmanagexe, setarrmanagexep] = useState()
-  const [arrve, setarrve] = useState()
+  const [arrve, setarrve] = useState([])
 
   const [arrseatup, setarrseatup] = useState()
   const [arrseatdow, setarrseatdow] = useState()
 
 
-  const [dataseat, setdataseat] = useState([])
+  // const [dataseat, setdataseat] = useState([])
+  const [seatMode, setSeatMode] = useState('seatDown');
 
 
   const getves = async (id) => {
@@ -75,6 +77,8 @@ function Bookingticket() {
   let datainitia = 'Vui lòng chọn tầng'
 
   const [dataseatget, setdataseatget] = useState(datainitia);
+  const [dataSeatUp, setDataSeatUp] = useState([])
+  const [dataSeatDown, setDataSeatDown] = useState([])
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -226,27 +230,33 @@ function Bookingticket() {
   }
 
 
-
+  const handleChangeSeatUpSelected = (arrSeatUpData) => {
+    setSeatUpSelected(arrSeatUpData);
+  }
   const getseatUPw = async () => {
-
-    let data = <BookingSeat arr={arrseatup} handleSendData={(data) => handleGetData(data)} />
-
-
-
-    setdataseat(data)
+    setSeatMode('seatUp');
+    // let data = <BookingSeatUp arr={arrseatup} handleSendData={(data) => handleGetDataSeatUp(data)} dataSeatUp={dataSeatUp} />
+    // setdataseat(data)
   }
 
   const getseatdoww = async () => {
-
-    let data = <BookingSeat arr={arrseatdow} handleSendData={(data) => handleGetData(data)} />
-    setdataseat(data)
+    setSeatMode('seatDown');
+    // let data = <BookingSeatDown arr={arrseatdow} handleSendData={(data) => handleGetData(data)} />
+    // setdataseat(data)
 
   }
 
-  const handleGetData = (data) => {
-    setdataseatget(data)
+  const handleGetDataSeatDown = (data) => {
+    // setdataseatget(data)
+    setDataSeatDown(data)
   }
+  
 
+  const handleGetDataSeatUp = (data) => {
+    setDataSeatUp(data)
+    
+  }
+  console.log("data seat up", arrve);
 
 
   return (
@@ -268,9 +278,7 @@ function Bookingticket() {
                       value={date}
                       onChange={(e) => {
                         setDate(e.target.value)
-
                         getAllManageXes(e.target.value)
-
                       }
 
                       }
@@ -429,7 +437,23 @@ function Bookingticket() {
                       </Form.Group>
 
 
-                      {dataseat}
+                      {/* {dataseat} */}
+                      {seatMode === 'seatUp' && (
+                        <BookingSeatUp 
+                          arr={arrseatup} 
+                          handleSendData={(data) => handleGetDataSeatUp(data)} 
+                          dataSeatUp={dataSeatUp} 
+                          arrve={arrve}
+                        />
+                      )}
+                      {seatMode === 'seatDown' && (
+                        <BookingSeatDown 
+                          arr={arrseatdow} 
+                          handleSendData={(data) => handleGetDataSeatDown(data)} 
+                          dataSeatDown={dataSeatDown} 
+                          arrve={arrve} 
+                        />
+                      )}
                     </Form>
 
                   </Modal.Body>
