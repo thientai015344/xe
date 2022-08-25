@@ -271,7 +271,7 @@ function Bookingticket() {
     setDataSeatUp(data)
     
   }
-  console.log("data seat up", arrve);
+  console.log("data seat up test", arrve);
 
 
   return (
