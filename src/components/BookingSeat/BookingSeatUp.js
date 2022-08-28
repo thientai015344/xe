@@ -1,6 +1,5 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-
 import "../../assets/css/sccSeats.scss";
 
 function BookingSeatUp({ arr, handleSendData, dataSeatUp, arrve }) {
@@ -30,13 +29,17 @@ function BookingSeatUp({ arr, handleSendData, dataSeatUp, arrve }) {
         {arr &&
           arr.map((item, index) => {
             return (
-              <li key={index} className="seat">
+              <li key={item.key} className="seat">
+
                 <input
                   type="checkbox"
                   id={item.key}
                   disabled={handleGetDisabled(item.value)}
+
                   checked={handleChecked(item.value)}
                   onChange={(e) => handleSelectSeat(e, item.value)}
+
+
                 />
                 <label htmlFor={item.key}>{item.value}</label>
               </li>

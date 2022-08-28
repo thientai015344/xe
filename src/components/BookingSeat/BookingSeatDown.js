@@ -31,7 +31,10 @@ function BookingSeatDown({ arr, handleSendData, dataSeatDown, arrve }) {
         {arr &&
           arr.map((item, index) => {
             return (
-              <li key={index} className="seat">
+
+
+              <li key={item.key} className="seat">
+
                 <input
                   type="checkbox"
                   id={item.key}
