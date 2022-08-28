@@ -504,7 +504,7 @@ function Bookingticket() {
               </Card.Header>
               <Card.Body className="all-icons">
                 {/* handleShow */}
-                <Button variant="primary" size="sm" onClick={handleShowfr} active>
+                <Button variant="primary" size="sm" onClick={handleShow} active>
                   Đặt vé
                 </Button>
                 <Table striped bordered hover size="sm">
