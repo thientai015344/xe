@@ -44,6 +44,24 @@ const editCar = (data) => {
 }
 
 
+const deletechi = (CarId) => {
+    return axios.delete('/api/delete-commodity', {
+        data: { id: CarId }
+    });
+}
+
+
+
+const deletemap = (CarId) => {
+    return axios.delete('/api/delete-roadmap', {
+        // headers: {Authorization: authorizationToken},
+        data: { id: CarId }
+
+
+    });
+}
+
+
 
 
 
@@ -100,6 +118,7 @@ const getAllsignments = (inputId) => {
 
 
 const seatbook = (data) => {
+    console.log('databunk', data)
     return axios.post('/api/create-new-seatbook', data);
 }
 
@@ -118,6 +137,18 @@ const getchi = (inputId) => {
 const getve = (inputId) => {
     return axios.get(`/api/get-all-seatbookxe?id=${inputId}`)
 }
+
+const getveid = (inputId) => {
+    return axios.get(`/api/get-all-getvexe?id=${inputId}`)
+}
+
+const getchithongke = (data) => {
+    console.log('check data', data)
+
+    return axios.get('/api/get-all-commoditydate', data);
+}
+
+
 
 export {
     createNewmap,
@@ -139,5 +170,8 @@ export {
     taochi,
     getchi,
     getve,
-
+    getveid,
+    deletechi,
+    getchithongke,
+    deletemap,
 }

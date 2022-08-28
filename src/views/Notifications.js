@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLCar, taochi, getchi } from '../services/carSevice';
+import { getALLCar, taochi, getchi, deletechi } from '../services/carSevice';
 
 import {
   Button,
@@ -12,6 +12,7 @@ import {
   Table,
   Form,
 } from "react-bootstrap";
+import { Input } from "reactstrap";
 
 function Notifications() {
   const [showCar, setShowcar] = useState(false);
@@ -22,7 +23,7 @@ function Notifications() {
   };
   const [arrchi, setarrchi] = useState('');
   const [arrcarchi, setarrcarchi] = useState('');
-
+  const [dateinput, setdateinput] = useState(new Date());
 
   const [idcar, setidcar] = useState('');
   const [descrtpt, setdescrtpt] = useState('');
@@ -33,21 +34,27 @@ function Notifications() {
 
 
 
+    let checkprice = isNumeric(price)
 
     if (idcar == '' || descrtpt == '' || price == '') {
       alert('chọn đầy đủ thông tin ạ')
     }
-    else {
 
+    else if (checkprice == false) {
+      alert('Giá tiền chưa đúng vui lòng nhập lại ')
+    }
+    else {
       let chi = {
         descriptioncommodities: descrtpt,
         price: price,
-        commonCarId: idcar
+        commonCarId: idcar,
+        dateinput: dateinput
       }
-
       taochis(chi);
-
     }
+
+
+
 
 
   }
@@ -59,12 +66,12 @@ function Notifications() {
       if (response && response.errCode !== 0) {
         alert(' xa da ton tai ')
       } else {
-        alert(' them phieu chi thanh cong')
+        alert(' Tạo phiếu chi thành công')
         handleClosecar();
-        await this.getchis();
-
+        await getchis();
       }
-      handleClosecar
+
+      handleClosecar()
 
     } catch (error) {
       console.log(error);
@@ -77,9 +84,35 @@ function Notifications() {
     getchis();
 
 
-  });
+  }, []);
+
+  function isNumeric(val) {
+    return /^-?\d+$/.test(val);
+  }
+
+  const handleDelete = async (singer) => {
 
 
+    try {
+      let res = await deletechi(singer.id)
+      if (res && res.errCode === 0) {
+
+        await getchis()
+
+        alert('Xóa Thành Công')
+
+      }
+      else {
+        alert(res.errMessage)
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
+
+  }
 
   const getAllCars = async () => {
     let response = await getALLCar('ALL')
@@ -87,17 +120,17 @@ function Notifications() {
       console.log('ddd', response.cars)
 
       let convert = response.cars && response.cars.map(track => {
-        let createdAt = '';
+        let dateinput = '';
 
-        if (track.createdAt) {
+        if (track.dateinput) {
 
-          let num = track.createdAt
+          let num = track.dateinput
           let arr = num.toString().split("T")
 
 
-          createdAt = arr[0].split("-").reverse().join("-");
+          dateinput = arr[0].split("-").reverse().join("-");
         }
-        return { id: track.id, platesCar: track.platesCar, createdAt: createdAt }
+        return { id: track.id, platesCar: track.platesCar, dateinput: dateinput }
       })
 
       setarrcarchi(convert);
@@ -110,31 +143,32 @@ function Notifications() {
     let response = await getchi('ALL')
     if (response && response.errCode === 0) {
 
+      let dataget = response.commoditys.reverse();
 
-      let convert = response.commoditys && response.commoditys.map(track => {
-        console.log('cut', track)
-        let createdAt = '';
 
-        if (track.createdAt) {
+      let convert = dataget && dataget.map(track => {
+        let dateinput = '';
 
-          let num = track.createdAt
+        if (track.dateinput) {
+
+          let num = track.dateinput
           let arr = num.toString().split("T")
 
 
-          createdAt = arr[0].split("-").reverse().join("-");
+          dateinput = arr[0].split("-").reverse().join("-");
         }
-        return { id: track.id, descriptioncommodities: track.descriptioncommodities, price: track.price, namecar: track.car.platesCar, createdAt: createdAt }
+        return { id: track.id, descriptioncommodities: track.descriptioncommodities, price: track.price, namecar: track.car.platesCar, dateinput: dateinput }
       })
+
+
 
       setarrchi(convert);
 
+
+
+
     }
   }
-
-
-
-
-
 
   return (
     <>
@@ -158,37 +192,27 @@ function Notifications() {
                       <th>số tiền</th>
                       <th>Xe</th>
                       <th>Ngày tạo</th>
-
                     </tr>
                   </thead>
                   <tbody>
                     {arrchi && arrchi.map((item, index) => {
                       return (
-                        <tr key={index + 1}>
-                          <td>{index}</td>
+                        <tr key={index}>
+                          <td>{index + 1}</td>
                           <td>{item.descriptioncommodities}</td>
                           <td>{item.price}</td>
                           <td>{item.namecar}</td>
-                          <td>{item.createdAt}</td>
-                          {/* <td>
-                            <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
-                                <i className="fas fa-edit">
-                                </i></button>
-                            <button 
-                            className="btn-delete"
-                            onClick = {() =>{this.handleDelete(item)}}
+                          <td>{item.dateinput}</td>
+                          <td>
+                            <button className="btn-delete"
+                              onClick={() => { handleDelete(item) }}
                             >
-                                <i 
-                            className="fas fa-trash">
-                                </i></button>
-                        </td> */}
+                              <i className="fas fa-trash"></i></button>
+                          </td>
                         </tr>
                       )
-
                     })
                     }
-
-
                   </tbody>
                 </Table>
 
@@ -198,13 +222,24 @@ function Notifications() {
                   </Modal.Header>
                   <Modal.Body>
                     <Form>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Chọn ngày chi</Form.Label>
+                        <Form.Control
+                          type="date"
+                          placeholder="Due date"
+                          onChange={(e) => {
+                            setdateinput(e.target.value)
+                          }
+
+                          }
+                        />
+                      </Form.Group>
                       <Form.Group className="mb-3 ">
                         <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
                         <Form.Select id="selectCar"
                           value={idcar}
                           onChange={e => {
                             setidcar(e.target.value);
-                            getAllManageXes(e.target.value)
                           }}
                         >
                           <option>Chọn xe </option>
@@ -229,8 +264,9 @@ function Notifications() {
                       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <Form.Label>Giá tiền</Form.Label>
                         <Form.Control
-                          type="text"
-                          placeholder="2000000"
+                          type="number"
+
+                          placeholder="2.000.000"
                           autoFocus
                           onChange={(e) => setprice(e.target.value)}
                         ></Form.Control>

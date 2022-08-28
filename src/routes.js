@@ -6,13 +6,14 @@ import Hang from "views/Hang";
 import Maps from "views/Maps.js";
 import ManageXe from "views/ManageXe";
 import Notifications from "views/Notifications.js";
+import ve from "./components/ticket/Ticket.js";
 
 
 const dashboardRoutes = [
 
   {
     path: "/dashboard",
-    name: "Dashboard",
+    name: "Thống kê",
     icon: "nc-icon nc-chart-pie-35",
     component: Dashboard,
     layout: "/admin"
@@ -58,6 +59,14 @@ const dashboardRoutes = [
     name: "phiếu chi",
     icon: "nc-icon nc-bell-55",
     component: Notifications,
+    layout: "/admin"
+  },
+
+  {
+    path: "/chis",
+    name: "phive",
+    icon: "nc-icon nc-bell-55",
+    component: ve,
     layout: "/admin"
   }
 ];

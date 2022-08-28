@@ -44,10 +44,12 @@ function ManageXe() {
       if (response && response.errCode !== 0) {
         alert('đã có lỗi xảy ra ')
       } else {
-        await this.getAllManageXe();
-        handleClosecar();
+        handleClosemanagecar();
+        await getAllManageXes();
 
       }
+      handleClosemanagecar();
+
 
     } catch (error) {
       console.log(error);
@@ -171,7 +173,7 @@ function ManageXe() {
 
 
                 <Button variant="primary" size="sm" onClick={handleShowmanagecar} active>
-                  Quản lý xe
+                  Lên lịch xe
                 </Button>
 
               </Card.Header>
@@ -222,7 +224,7 @@ function ManageXe() {
 
                 <Modal show={showmanagecar} onHide={handleClosemanagecar}>
                   <Modal.Header closeButton>
-                    <Modal.Title>Quản lý xe</Modal.Title>
+                    <Modal.Title> Lên lịch xe</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
                     <Form>

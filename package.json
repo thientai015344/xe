@@ -4,26 +4,32 @@
   "homepage": "https://nhaxetoanthongdaklak.com/",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.2",
-    "bootstrap": "4.6.0",
+    "bootstrap": "^4.6.0",
+    "cdbreact": "^1.5.3",
     "chart.js": "^3.9.1",
+    "datatable": "^2.0.2",
+    "datatables.net": "^1.12.1",
+    "datatables.net-buttons": "^2.2.3",
+    "datatables.net-dt": "^1.12.1",
     "faker": "^6.6.6",
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.9",
     "lodash": "^4.17.21",
-    "react": "18.1.0",
+    "react": "^18.1.0",
     "react-axios": "^2.0.6",
     "react-bootstrap": "2.5.0",
     "react-chartjs-2": "^4.3.1",
-    "react-dom": "18.1.0",
-    "react-notification-alert": "0.0.13",
+    "react-dom": "^18.1.0",
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
     "react-scripts": "5.0.1",
+    "react-table": "^7.8.0",
+    "react-to-print": "^2.14.7",
     "reactstrap": "8.8.1",
     "sass": "1.53.0"
   },
   "optionalDependencies": {
-    "jquery": "3.5.1",
+    "jquery": "^3.5.1",
     "typescript": "4.7.4"
   },
   "scripts": {
@@ -37,8 +43,8 @@
     "build:scss": "npm run compile:scss && npm run minify:scss"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
   },
   "browserslist": {
     "production": [

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLCar, createNewCar, } from '../services/carSevice';
+import { getALLCar, createNewCar, deleteCar } from '../services/carSevice';
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
 
@@ -8,9 +8,9 @@ function Cars() {
   const [showCar, setShowcar] = useState(false);
 
 
-  const [car, setcar] = useState()
+  const [car, setcar] = useState([])
 
-  const [arrcar, setarrcar] = useState()
+  const [arrcar, setarrcar] = useState([])
 
   const handleClosecar = () => setShowcar(false);
   const handleShowcar = () => setShowcar(true);
@@ -20,11 +20,11 @@ function Cars() {
     try {
       let response = await createNewCar(data);
       if (response && response.errCode !== 0) {
-        alert(' xa da ton tai ')
+        alert(' Xe đã tồn tại ')
       } else {
-        alert('thêm xe thành công')
+        alert('Thêm xe thành công')
         handleClosecar();
-        await this.getAllCars();
+        await getAllCars();
 
       }
       handleClosecar
@@ -32,6 +32,30 @@ function Cars() {
     } catch (error) {
       console.log(error);
     }
+
+  }
+
+  const handleDelete = async (singer) => {
+
+
+    try {
+      let res = await deleteCar(singer.id)
+      if (res && res.errCode === 0) {
+
+        await getAllCars()
+
+        alert('Xóa Thành Công')
+
+      }
+      else {
+        alert(res.errMessage)
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
 
   }
 
@@ -63,7 +87,7 @@ function Cars() {
     getAllCars();
 
 
-  });
+  }, []);
 
 
 
@@ -119,23 +143,22 @@ function Cars() {
                   </thead>
                   <tbody>
                     {arrcar && arrcar.map((item, index) => {
+                      console.log('itemd', arrcar)
                       return (
                         <tr key={index + 1}>
                           <td>{index}</td>
                           <td>{item.platesCar}</td>
                           <td>{item.createdAt}</td>
-                          {/* <td>
-                            <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
-                                <i className="fas fa-edit">
-                                </i></button>
-                            <button 
-                            className="btn-delete"
-                            onClick = {() =>{this.handleDelete(item)}}
+                          <td>
+
+                            <button
+                              className="btn-delete"
+                              onClick={() => { handleDelete(item) }}
                             >
-                                <i 
-                            className="fas fa-trash">
-                                </i></button>
-                        </td> */}
+                              <i
+                                className="fas fa-trash">
+                              </i></button>
+                          </td>
                         </tr>
                       )
 

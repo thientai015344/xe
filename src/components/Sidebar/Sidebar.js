@@ -4,7 +4,6 @@ import { useLocation, NavLink } from "react-router-dom";
 
 import { Nav } from "react-bootstrap";
 
-import logo from "assets/img/reactlogo.png";
 
 function Sidebar({ color, image, routes }) {
   const location = useLocation();
@@ -16,20 +15,20 @@ function Sidebar({ color, image, routes }) {
       <div
         className="sidebar-background"
         style={{
-          backgroundImage: "url(" + image + ")"
+          backgroundColor: "#fff"
         }}
       />
       <div className="sidebar-wrapper">
         <div className="logo d-flex align-items-center justify-content-start">
           <a
-            href="https://www.tai-tai.com?ref=lbd-sidebar"
+            href="https://nhaxetoanthongdaklak.com/"
             className="simple-text logo-mini mx-1"
           >
             <div className="logo-img">
               <img src={require("assets/img/reactlogo.png")} alt="..." />
             </div>
           </a>
-          <a className="simple-text" href="http://www.tai-tai.com">
+          <a className="simple-text" href="https://nhaxetoanthongdaklak.com/">
             ToanThong
           </a>
         </div>

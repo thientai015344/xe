@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { createNewmap, getALLMap } from '../services/carSevice';
+import { createNewmap, getALLMap, deletemap } from '../services/carSevice';
 
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
@@ -35,8 +35,9 @@ function Maps() {
       if (response && response.errCode !== 0) {
         alert(' xa da ton tai ')
       } else {
-        await this.getAllCars();
-        handleClosecar();
+        alert('thêm tuyến đường thành công')
+        handleCloseroadmap();
+        await getAllmaps();
 
       }
 
@@ -62,6 +63,31 @@ function Maps() {
   }
 
 
+  const handleDelete = async (singer) => {
+
+
+    try {
+      let res = await deletemap(singer.id)
+      if (res && res.errCode === 0) {
+
+        await getAllmaps()
+
+        alert('Xóa Thành Công')
+
+      }
+      else {
+        alert(res.errMessage)
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
+
+  }
+
+
 
 
   useEffect(() => {
@@ -69,7 +95,7 @@ function Maps() {
 
     getAllmaps();
 
-  });
+  }, []);
 
 
 
@@ -115,11 +141,23 @@ function Maps() {
                   <tbody>
                     {arrmap && arrmap.map((item, index) => {
                       return (
-                        <tr key={index + 1}>
-                          <td>{index}</td>
+                        <tr key={index}>
+                          <td>{index + 1}</td>
                           <td>{item.from}</td>
                           <td>{item.to}</td>
                           <td>{item.createdAt}</td>
+                          <td>
+                            {/* <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
+                                <i className="fas fa-edit">
+                                </i></button> */}
+                            <button
+                              className="btn-delete"
+                              onClick={() => { handleDelete(item) }}
+                            >
+                              <i
+                                className="fas fa-trash">
+                              </i></button>
+                          </td>
 
                         </tr>
                       )
