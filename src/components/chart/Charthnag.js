@@ -1,23 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from 'cdbreact';
-import NumberFormat from 'react-number-format';
 
-const Chsrtim = (props) => {
+const ChartHnag = (props) => {
 
     const [total, setTotal] = useState(0);
 
-    const { arrayseatloop } = props;
+    const { arrhang } = props;
 
+    console.log('hahak', arrhang)
 
     useEffect(() => {
         let sum = 0;
-        arrayseatloop?.map(item => {
+        arrhang?.map(item => {
             sum += +item.gia;
         })
         if (sum > 0) {
             setTotal(sum)
         }
-    }, [arrayseatloop])
+    }, [arrhang])
 
 
 
@@ -26,17 +26,17 @@ const Chsrtim = (props) => {
 
             {
                 label: 'Xe',
-                field: 'bienso',
+                field: 'platesCar',
                 width: 150,
             },
             {
-                label: 'Gế',
-                field: 'seatbook',
+                label: 'Tên hàng',
+                field: 'namehang',
                 width: 200,
             },
             {
                 label: 'Tên khách hàng',
-                field: 'name',
+                field: 'nameuser',
                 sort: 'asc',
                 width: 150,
             },
@@ -47,8 +47,8 @@ const Chsrtim = (props) => {
                 width: 150,
             },
             {
-                label: 'Ngày đi ',
-                field: 'createdAt',
+                label: 'Ngày gửi',
+                field: 'date',
                 sort: 'asc',
                 width: 150,
             },
@@ -70,10 +70,10 @@ const Chsrtim = (props) => {
 
         setD({
             columns: [...d.columns],
-            rows: arrayseatloop
+            rows: arrhang
         })
 
-    }, [arrayseatloop])
+    }, [arrhang])
 
 
     useEffect(() => {
@@ -94,7 +94,7 @@ const Chsrtim = (props) => {
 
     return (
         < div ref={componentRef}>
-            {<span className="tongtien">Tổng tiền Thu vé = {total.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} </span>}
+            {<span className="tongtien">Tổng tiền hàng = {total.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} </span>}
             <CDBContainer>
                 <CDBCard>
                     <CDBCardBody>
@@ -118,4 +118,4 @@ const Chsrtim = (props) => {
     );
 };
 
-export default Chsrtim;
+export default ChartHnag;

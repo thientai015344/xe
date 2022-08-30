@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
 import { getALLManageXe } from '../services/carSevice';
-// react-bootstrap components
-import { Card, Container, Table, Row, Col, Button, Modal, Form, } from "react-bootstrap";
-import { CreateNewsigns, getALLTypeHang, CreateNewsignments, getAllsignments } from '../services/carSevice';
+import NumberFormat from 'react-number-format';
+import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
+import { CreateNewsigns, getALLTypeHang, CreateNewsignments, getAllsignments, deletehnag, editaddhang } from '../services/carSevice';
 
 
 function Hang() {
@@ -14,12 +14,12 @@ function Hang() {
 
 
   const [date, setDate] = useState(new Date());
-
+  const [idupdate, setidupdate] = useState()
   const [dategui, setDategui] = useState(new Date());
 
-
+  const [dateold, setdateold] = useState();
   const [loaihang, setloaihang] = useState('');
-  const [idloaihang, setidloaihang] = useState('');
+  const [idloaihang, setidloaihang] = useState();
 
   const [arrloaihang, setarrloaihang] = useState()
   const [namehang, setnamehang] = useState('');
@@ -29,27 +29,66 @@ function Hang() {
   const [nameget, setnameget] = useState('');
   const [sdtget, setsdtget] = useState('');
   const [price, setprice] = useState('');
-
   const [arrguihang, setarrguihang] = useState()
   const [arrxehang, setarrxehang] = useState()
   const [idcarhang, setidcarhang] = useState()
-
-
-
-
-
-
   const handleCloseHang = () => setShowHang(false);
   const handleShowHang = () => setShowHang(true);
-
   const handleCloseGuiHang1 = () => { setShowGuiHang1(false) };
   const handleShowGuiHang1 = () => {
-
-
     setShowGuiHang1(true)
     getALLTypeHangs();
-
   };
+
+
+  const [showGuiHangedit, setShowGuiHangedit] = useState(false);
+  const handleCloseGuiHangedit = () => { setShowGuiHangedit(false) };
+  const handleShowGuiHangedit = () => {
+    setShowGuiHangedit(true)
+    getALLTypeHangs();
+  };
+
+
+  const handleEdit = async (hang) => {
+    console.log('djaeeeeeeehd', hang)
+    const str = hang.date;
+
+    const [day, month, year] = str.split('-');
+
+    let adddd = year + '-' + month + '-' + day
+
+    if (adddd) {
+
+      getAllxehang(adddd)
+
+      await setdateold(adddd)
+    }
+
+
+    await setidcarhang(hang.idcar)
+    await setidloaihang(hang.idhang)
+
+    setnamehang(hang.name)
+    setnamesend(hang.nameUserSend)
+    setsdtsend(hang.phonenumberUserSend)
+    setnameget(hang.nameUserGet)
+    setsdtget(hang.phonenumberUserGet)
+    setidupdate(hang.id)
+
+    let gia = hang.price
+    await setprice(+gia)
+
+
+
+
+
+
+    handleShowGuiHangedit();
+
+
+
+
+  }
 
 
 
@@ -78,6 +117,28 @@ function Hang() {
     }
   }
 
+
+  const handleDelete = async (hang) => {
+
+    try {
+      let res = await deletehnag(hang.id)
+      if (res && res.errCode === 0) {
+
+        await getAllsignment()
+
+        alert('Xóa Thành Công')
+
+      }
+      else {
+        alert(res.errMessage)
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
+  }
 
 
   const saveloaihang = async () => {
@@ -150,8 +211,9 @@ function Hang() {
 
       let response = await getAllsignments('ALL')
       if (response && response.errCode === 0) {
-
-        let convert = response.consignments && response.consignments.map(track => {
+        let data = response.consignments.reverse();
+        console.log('fafaa', data)
+        let convert = data && data.map(track => {
           let date = '';
 
           if (track.date) {
@@ -160,7 +222,7 @@ function Hang() {
             let arr = num.toString().split("T")
             date = arr[0].split("-").reverse().join("-");
           }
-          return { id: track.id, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, nametypecommodities: track.typecommodity.nametypecommodities }
+          return { id: track.id, idcar: track.carhangId, idhang: track.typecommoditiesId, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, nametypecommodities: track.typecommodity.nametypecommodities }
         })
 
         setarrguihang(convert)
@@ -198,9 +260,38 @@ function Hang() {
     }
   }
 
-  useEffect(() => {
 
-    getAllsignment();
+
+  const updadesedhang = async () => {
+    if (!idcarhang) {
+      alert('Vui lòng chọn xe ')
+    } else {
+      if (idloaihang == '') {
+        alert('Vui lòng chọn loại hàng')
+      }
+      else {
+        const current = new Date();
+        const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
+        let datecho = new Date(ngay);
+        let datenow = new Date(dategui);
+
+        if (datenow < datecho) {
+          alert('Không được chọn ngày nhỏ hơn ngày hiện tại')
+        }
+        else {
+          CreateNewsignment();
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    const today = new Date();
+    const numberOfDaysToAdd = 0;
+    const datenow = today.setDate(today.getDate() + numberOfDaysToAdd);
+    const defaultValue = new Date(datenow).toISOString().split('T')[0] // yyyy-mm-dd
+
+    getAllsignment(defaultValue);
 
   }, []);
 
@@ -233,10 +324,52 @@ function Hang() {
       } else if (checksdtget == false) {
         alert('Số điện thoại người nhận chưa đúng ')
       } else {
-        creatsenthang();
+        if (idupdate) {
+          editsenthang();
+        }
+        else {
+
+          creatsenthang();
+        }
+
       }
     }
   }
+  const editsenthang = async () => {
+    console.log('datagupdate', dategui)
+
+    let userId = sessionStorage.getItem("userId");
+    let edithang = {
+
+      id: idupdate,
+      name: namehang,
+      nameUserSend: namesend,
+      phonenumberUserSend: sdtsend,
+      nameUserGet: nameget,
+      phonenumberUserGet: sdtget,
+      typecommoditiesId: idloaihang,
+      carhangId: idcarhang,
+      price: price,
+      date: dategui,
+      userId: userId,
+    }
+    try {
+      let response = await editaddhang(edithang);
+      if (response && response.errCode !== 0) {
+        alert(' xa da ton tai ')
+      } else {
+        alert('Cập nhật thành công')
+        await getAllsignment();
+        handleCloseGuiHangedit();
+        setidupdate('')
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
 
 
   const creatsenthang = async () => {
@@ -250,6 +383,7 @@ function Hang() {
       nameUserGet: nameget,
       phonenumberUserGet: sdtget,
       typecommoditiesId: idloaihang,
+      carhangId: idcarhang,
       price: price,
       date: dategui,
       userId: userId,
@@ -271,7 +405,10 @@ function Hang() {
   }
 
 
-
+  const todayd = new Date();
+  const numberOfDaysToAdd = 0;
+  const datenoww = todayd.setDate(todayd.getDate() + numberOfDaysToAdd);
+  const defaultValuwe = new Date(datenoww).toISOString().split('T')[0] // yyyy-mm-dd
   return (
     <>
       <Container fluid>
@@ -301,7 +438,7 @@ function Hang() {
                     type="date"
                     name="duedate"
                     placeholder="Due date"
-
+                    defaultValue={defaultValuwe}
                     onChange={(e) => {
                       setDate(e.target.value)
                       getAllsignment(e.target.value);
@@ -338,24 +475,30 @@ function Hang() {
                           <td>{item.date}</td>
                           <td>{item.name}</td>
                           <td>{item.nametypecommodities}</td>
-                          <td>{item.price}</td>
+                          <td> <NumberFormat
+                            thousandSeparator={'.'}
+                            decimalSeparator={false}
+                            suffix={' đ'}
+                            value={item.price}
+                            displayType={"text"}
+                          /></td>
                           <td>{item.nameUserSend}</td>
                           <td>{item.phonenumberUserSend}</td>
                           <td>{item.nameUserGet}</td>
                           <td>{item.phonenumberUserGet}</td>
 
-                          {/* <td>
-                            <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
-                                <i className="fas fa-edit">
-                                </i></button>
-                            <button 
-                            className="btn-delete"
-                            onClick = {() =>{this.handleDelete(item)}}
+                          <td>
+                            <button className="btn-edit" onClick={() => { handleEdit(item) }} >
+                              <i className="fas fa-edit">
+                              </i></button>
+                            <button
+                              className="btn-delete"
+                              onClick={() => { handleDelete(item) }}
                             >
-                                <i 
-                            className="fas fa-trash">
-                                </i></button>
-                        </td> */}
+                              <i
+                                className="fas fa-trash">
+                              </i></button>
+                          </td>
                         </tr>
                       )
 
@@ -389,8 +532,6 @@ function Hang() {
                     </Button>
                   </Modal.Footer>
                 </Modal>
-
-
 
                 <Modal size="lg" show={showGuiHang1} onHide={handleCloseGuiHang1}>
                   <Modal.Header closeButton>
@@ -476,16 +617,18 @@ function Hang() {
                       </div>
                       <Form.Group className="mb-3 col-12" controlId="exampleForm.ControlInputfrice">
                         <Form.Label>Giá tiền<p className="sao">*</p></Form.Label>
-                        <Form.Control
-                          type="number"
-
-                          placeholder="vd: 300000"
-
-
-                          onChange={e => setprice(e.target.value)}
-
-                        ></Form.Control>
-
+                        <NumberFormat
+                          thousandSeparator={'.'}
+                          decimalSeparator={false}
+                          suffix={' đ'}
+                          className="form-control"
+                          value={price}
+                          onValueChange={values => {
+                            const { formattedValue, floatValue } = values;
+                            setprice(floatValue)//bad code
+                          }}
+                          placeholder="vd: 100.000.000"
+                        />
                       </Form.Group>
                       <div className="d-flex">
                         <Form.Group className="mb-3 col-6">
@@ -535,6 +678,159 @@ function Hang() {
                       Đóng
                     </Button>
                     <Button variant="primary" onClick={tieptuc}>
+                      Lưu
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+
+
+
+                <Modal size="lg" show={showGuiHangedit} onHide={handleCloseGuiHangedit}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Chỉnh sửa</Modal.Title>
+
+                  </Modal.Header>
+
+                  <Modal.Body>
+
+                    <Form>
+                      <div className="d-flex">
+
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label>Chọn ngày gửi</Form.Label>
+                          <Form.Control
+                            type="date"
+                            defaultValue={dateold}
+                            onChange={(e) => {
+                              setDategui(e.target.value)
+                              getAllxehang(e.target.value)
+                            }
+                            }
+                          />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3 col-6 ">
+                          <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
+                          <Form.Select id="selectCar"
+                            value={idcarhang}
+                            onChange={e => {
+                              setidcarhang(e.target.value);
+
+                            }}
+                          >
+                            <option>Chọn xe gửi</option>
+                            {arrxehang && arrxehang.map((item, index) => {
+                              return (
+
+                                <option key={index} value={item.id} >{item.car.platesCar}</option>
+                              )
+                            })
+                            }
+                          </Form.Select>
+                        </Form.Group>
+
+
+                      </div>
+
+                      <div className="d-flex">
+
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label>Tên hàng <p className="sao">*</p></Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={namehang}
+                            onChange={(e) => setnamehang(e.target.value)}
+                            autoFocus
+                          ></Form.Control>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label htmlFor="selecttypehang">Loại Hàng</Form.Label>
+                          <Form.Select id="selecttypehang"
+                            value={idloaihang}
+                            onChange={e => {
+                              setidloaihang(e.target.value);
+                            }}
+                          >
+                            <option>Chọn loại hàng</option>
+                            {arrloaihang && arrloaihang.map((item, index) => {
+                              return (
+                                <option key={index} value={item.id}>{item.nametypecommodities}</option>
+                              )
+                            })
+                            }
+                          </Form.Select>
+                        </Form.Group>
+
+                      </div>
+                      <Form.Group className="mb-3 col-12" controlId="exampleForm.ControlInputfrice">
+                        <Form.Label>Giá tiền<p className="sao">*</p></Form.Label>
+                        <NumberFormat
+                          thousandSeparator={'.'}
+                          decimalSeparator={false}
+                          suffix={' đ'}
+                          className="form-control"
+                          value={price}
+                          onValueChange={values => {
+                            const { formattedValue, floatValue } = values;
+                            setprice(floatValue)//bad code
+                          }}
+                          placeholder="vd: 100.000.000"
+                        />
+                      </Form.Group>
+                      <div className="d-flex">
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label>Người gửi <p className="sao">*</p></Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={namesend}
+                            onChange={(e) => setnamesend(e.target.value)}
+                            autoFocus
+                          ></Form.Control>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label>Sđt người gửi <p className="sao">*</p></Form.Label>
+                          <Form.Control
+                            type="number"
+                            value={sdtsend}
+
+                            onChange={(e) => setsdtsend(e.target.value)}
+                            autoFocus
+                          ></Form.Control>
+                        </Form.Group>
+
+                      </div>
+
+                      <div className="d-flex">
+
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label>Người nhận<p className="sao">*</p></Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={nameget}
+                            onChange={(e) => setnameget(e.target.value)}
+                            autoFocus
+                          ></Form.Control>
+                        </Form.Group>
+                        <Form.Group className="mb-3 col-6">
+                          <Form.Label>Sđt người nhận<p className="sao">*</p></Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={sdtget}
+                            onChange={(e) => setsdtget(e.target.value)}
+                            autoFocus
+                          ></Form.Control>
+                        </Form.Group>
+                      </div>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseGuiHang1}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={updadesedhang}>
                       Lưu
                     </Button>
                   </Modal.Footer>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLCar, taochi, getchi, deletechi } from '../services/carSevice';
-
+import { getALLCar, taochi, getchi, deletechi, editphieuchi } from '../services/carSevice';
+import NumberFormat from 'react-number-format';
 import {
   Button,
   Card,
@@ -12,7 +12,8 @@ import {
   Table,
   Form,
 } from "react-bootstrap";
-import { Input } from "reactstrap";
+
+
 
 function Notifications() {
   const [showCar, setShowcar] = useState(false);
@@ -21,11 +22,24 @@ function Notifications() {
     setShowcar(true)
     getAllCars();
   };
+
+  const [showCaredit, setshowCaredit] = useState(false);
+  const handleClosecaredit = () => setshowCaredit(false);
+  const handleShowcaredit = () => {
+    setshowCaredit(true)
+    getAllCars();
+  };
+
+
+
   const [arrchi, setarrchi] = useState('');
   const [arrcarchi, setarrcarchi] = useState('');
   const [dateinput, setdateinput] = useState(new Date());
+  const [idchi, setidchi] = useState('');
+  const [dateold, setdateold] = useState('');
 
-  const [idcar, setidcar] = useState('');
+
+  const [idcar, setidcar] = useState();
   const [descrtpt, setdescrtpt] = useState('');
   const [price, setprice] = useState('');
 
@@ -45,17 +59,33 @@ function Notifications() {
     }
     else {
       let chi = {
+
         descriptioncommodities: descrtpt,
         price: price,
         commonCarId: idcar,
         dateinput: dateinput
       }
       taochis(chi);
+
     }
+  }
 
+  const editchis = async (data) => {
+    try {
+      let response = await editphieuchi(data);
+      if (response && response.errCode !== 0) {
+        alert(' xa da ton tai ')
+      } else {
+        alert(' Chỉnh sửa phiếu chi thành công')
+        handleClosecaredit();
+        await getchis();
+      }
 
+      handleClosecar()
 
-
+    } catch (error) {
+      console.log(error);
+    }
 
   }
 
@@ -142,7 +172,7 @@ function Notifications() {
   const getchis = async () => {
     let response = await getchi('ALL')
     if (response && response.errCode === 0) {
-
+      console.log(response.commoditys)
       let dataget = response.commoditys.reverse();
 
 
@@ -157,18 +187,94 @@ function Notifications() {
 
           dateinput = arr[0].split("-").reverse().join("-");
         }
-        return { id: track.id, descriptioncommodities: track.descriptioncommodities, price: track.price, namecar: track.car.platesCar, dateinput: dateinput }
+        return { id: track.id, descriptioncommodities: track.descriptioncommodities, price: track.price, idcar: track.car.id, namecar: track.car.platesCar, dateinput: dateinput }
       })
-
-
-
       setarrchi(convert);
-
-
-
-
     }
   }
+
+
+  const handlecaredit = async (datachi) => {
+
+    console.log(datachi)
+
+
+    const str = datachi.dateinput;
+
+    const [day, month, year] = str.split('-');
+
+    let adddd = year + '-' + month + '-' + day
+
+    if (adddd) {
+
+      await setdateold(adddd)
+    }
+    setidchi(datachi.id)
+    let gia = datachi.price
+    setarrcarchi()
+    setidcar(datachi.idcar)
+
+    setdescrtpt(datachi.descriptioncommodities)
+
+
+    await setprice(+gia)
+
+
+
+
+    handleShowcaredit();
+
+
+
+
+
+
+  }
+
+
+  const handleUpdatecar = (datachi) => {
+
+
+
+    let checkprice = isNumeric(price)
+
+    if (idcar == '' || descrtpt == '' || price == '') {
+      alert('chọn đầy đủ thông tin ạ')
+    }
+
+    else if (checkprice == false) {
+      alert('Giá tiền chưa đúng vui lòng nhập lại ')
+    }
+    else {
+      let chi = {
+        id: idchi,
+        descriptioncommodities: descrtpt,
+        price: price,
+        commonCarId: idcar,
+        dateinput: dateinput
+      }
+      editchis(chi);
+
+    }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  const today = new Date();
+  const numberOfDaysToAdd = 0;
+  const date = today.setDate(today.getDate() + numberOfDaysToAdd);
+  const defaultValue = new Date(date).toISOString().split('T')[0] // yyyy-mm-dd
+
 
   return (
     <>
@@ -192,6 +298,7 @@ function Notifications() {
                       <th>số tiền</th>
                       <th>Xe</th>
                       <th>Ngày tạo</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -200,10 +307,25 @@ function Notifications() {
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>{item.descriptioncommodities}</td>
-                          <td>{item.price}</td>
+                          <td>
+
+                            <NumberFormat
+                              thousandSeparator={'.'}
+                              decimalSeparator={false}
+                              suffix={' đ'}
+                              value={item.price}
+                              displayType={"text"}
+                            />
+
+
+                          </td>
                           <td>{item.namecar}</td>
                           <td>{item.dateinput}</td>
                           <td>
+                            <button className="btn-edit" onClick={() => { handlecaredit(item) }} >
+                              <i className="fas fa-edit">
+                              </i></button>
+
                             <button className="btn-delete"
                               onClick={() => { handleDelete(item) }}
                             >
@@ -221,11 +343,14 @@ function Notifications() {
                     <Modal.Title>Thêm phiếu chi</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
+
+
                     <Form>
                       <Form.Group className="mb-3">
                         <Form.Label>Chọn ngày chi</Form.Label>
                         <Form.Control
                           type="date"
+                          defaultValue={defaultValue}
                           placeholder="Due date"
                           onChange={(e) => {
                             setdateinput(e.target.value)
@@ -263,15 +388,21 @@ function Notifications() {
 
                       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <Form.Label>Giá tiền</Form.Label>
-                        <Form.Control
-                          type="number"
-
-                          placeholder="2.000.000"
-                          autoFocus
-                          onChange={(e) => setprice(e.target.value)}
-                        ></Form.Control>
                       </Form.Group>
                     </Form>
+
+                    <NumberFormat
+                      thousandSeparator={'.'}
+                      decimalSeparator={false}
+                      suffix={' đ'}
+                      className="form-control"
+                      value={price}
+                      onValueChange={values => {
+                        const { formattedValue, floatValue } = values;
+                        setprice(floatValue)//bad code
+                      }}
+                      placeholder="vd: 100.000.000"
+                    />
                   </Modal.Body>
                   <Modal.Footer>
                     <Button variant="secondary" onClick={handleClosecar}>
@@ -279,6 +410,85 @@ function Notifications() {
                     </Button>
                     <Button variant="primary" onClick={handleCreatecar}>
                       Lưu
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+
+
+                <Modal show={showCaredit} onHide={handleClosecaredit}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Thêm phiếu chi</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Chọn ngày chi</Form.Label>
+                        <Form.Control
+                          type="date"
+                          defaultValue={defaultValue}
+                          placeholder="Due date"
+                          onChange={(e) => {
+                            setdateinput(e.target.value)
+                          }
+
+                          }
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3 ">
+                        <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
+                        <Form.Select id="selectCar"
+                          value={idcar}
+                          onChange={e => {
+                            setidcar(e.target.value);
+                          }}
+                        >
+                          <option>Chọn xe </option>
+                          {arrcarchi && arrcarchi.map((item, index) => {
+
+                            return (
+                              <option key={index} value={item.id} >{item.platesCar}</option>
+
+                            )
+                          })
+                          }
+                        </Form.Select>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>nội dung chi tiền</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="vd: đổ xăng , ... , ...."
+                          value={descrtpt}
+                          autoFocus
+                          onChange={(e) => setdescrtpt(e.target.value)}
+                        ></Form.Control>
+                      </Form.Group>
+
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Giá tiền</Form.Label>
+                      </Form.Group>
+                    </Form>
+
+                    <NumberFormat
+                      thousandSeparator={'.'}
+                      decimalSeparator={false}
+                      suffix={' đ'}
+                      className="form-control"
+                      value={price}
+                      onValueChange={values => {
+                        const { formattedValue, floatValue } = values;
+                        setprice(floatValue)//bad code
+                      }}
+                      placeholder="vd: 100.000.000"
+                    />
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClosecaredit}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleUpdatecar}>
+                      Cập nhật
                     </Button>
                   </Modal.Footer>
                 </Modal>

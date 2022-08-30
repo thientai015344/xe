@@ -62,13 +62,7 @@ const dashboardRoutes = [
     layout: "/admin"
   },
 
-  {
-    path: "/chis",
-    name: "phive",
-    icon: "nc-icon nc-bell-55",
-    component: ve,
-    layout: "/admin"
-  }
+
 ];
 
 export default dashboardRoutes;

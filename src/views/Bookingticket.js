@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLManageXe, getALLSeat, createNewticket, seatbook, getve, getveid } from '../services/carSevice';
+import { getALLManageXe, getALLSeat, createNewticket, seatbook, getve, getveid, deletboking, edidtbokkve } from '../services/carSevice';
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form, ButtonGroup } from "react-bootstrap";
 import BookingSeatUp from "components/BookingSeat/BookingSeatUp";
 import BookingSeatDown from "components/BookingSeat/BookingSeatDown";
 import BookingSeatsub from "components/BookingSeat/BookingSeatsub";
-
+import NumberFormat from 'react-number-format';
+import Ticket from "components/ticket/Ticket";
 
 
 function Bookingticket() {
+  const [dataInVe, setDataInve] = useState({})
   const [show, setShow] = useState(false);
   const [showfr, setShowfr] = useState(false);
+  const [showve, setShowve] = useState(false);
+  const [idve, setidve] = useState({})
+
+
+  const [seditve, setSeditve] = useState(false);
+
+  const handleCloseseditve = () => setSeditve(false);
+  const handleShowseditve = () => setSeditve(true);
+
 
   const [date, setDate] = useState(new Date());
   const [fName, setfName] = useState('');
@@ -54,7 +65,7 @@ function Bookingticket() {
           if (track.bookingseats.nameClient) {
 
             num = track.bookingseats.nameClient
-            0
+
           }
 
           return { idbook: track.bookingseats.id, namekhach: num, sdt: track.bookingseats.phoneNumber, seat: track.bookingseats.seatbooks.seatId }
@@ -111,16 +122,15 @@ function Bookingticket() {
 
 
 
-
-
-
   const getveids = async (idd) => {
 
     let response = await getveid(idd)
-
+    console.log('id sêt', response)
     if (response && response.errCode === 0) {
 
       let name = response.bookingseatxe[0].bookingseat.nameClient;
+      let id = response.bookingseatxe[0].bookingseat.id;
+
       let sdt = response.bookingseatxe[0].bookingseat.phoneNumber;
       let gia = response.bookingseatxe[0].bookingseat.price;
       let ngaydi = response.bookingseatxe[0].bookingseat.managecar.date;
@@ -143,6 +153,7 @@ function Bookingticket() {
       if (dataseatf) {
         seat.name = name;
         seat.sdt = sdt;
+        seat.id = id;
         seat.gia = gia;
         seat.createdAt = createdAt;
         seat.bienso = bienso;
@@ -156,16 +167,109 @@ function Bookingticket() {
   }
 
 
+  const updateve = () => {
+
+
+
+    if (fName !== '') {
+      let ves = {
+        id: idve,
+        nameClient: fName,
+        phoneNumber: sdt
+      }
+
+      Editcve(ves);
+    }
+    else {
+      alert('Vui lòng nhập thông tin xe')
+    }
+
+
+
+  }
+
+  const Editcve = async (data) => {
+    try {
+      let response = await edidtbokkve(data);
+      if (response && response.errCode !== 0) {
+        alert(' Xe đã tồn tại ')
+      } else {
+        alert('chinh sua thành công')
+        await getves(idmanage);
+
+        handleCloseseditve();
+
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+
+  const handleDelete = async (singer) => {
+
+    console.log('iddddddddd', singer)
+    try {
+      let res = await deletboking(singer.id)
+      if (res && res.errCode === 0) {
+
+        await getves(idmanage);
+
+        alert('Xóa Thành Công')
+
+      }
+      else {
+        alert(res.errMessage)
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
+
+  }
+
+
+  const handleEdit = (item) => {
+
+    setfName(item.name)
+    setsdt(item.sdt)
+    setidve(item.id)
+
+
+
+    handleShowseditve();
+  }
+
+
+
 
 
 
   const getAllManageXes = async (dated) => {
+
     if (dated) {
+
       let df = dated + "T00:00:00.000Z"
 
 
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
+        console.log('hshss', response)
+        setarrmanagexep(response.manageCar)
+      }
+    }
+    else {
+      let df = defaultValue + "T00:00:00.000Z"
+
+
+
+      let response = await getALLManageXe(df)
+      if (response && response.errCode === 0) {
+        console.log('hshss', response)
         setarrmanagexep(response.manageCar)
       }
     }
@@ -177,6 +281,7 @@ function Bookingticket() {
     getseatdow();
     getseatUP();
     getseatsub();
+    getAllManageXes();
 
 
   }, []);
@@ -220,6 +325,9 @@ function Bookingticket() {
   const handleClosefr = () => setShowfr(false);
   const handleShowfr = () => setShowfr(true);
 
+  const handleCloseve = () => setShowve(false);
+  const handleShowve = () => setShowve(true);
+
 
   const getfromdatat = () => {
     if (fName == '' || sdt == '' || frice == '') {
@@ -251,11 +359,14 @@ function Bookingticket() {
 
     }
 
-
   }
 
 
   const saveticket = () => {
+
+    setDataSeatUp('')
+    setDataSeatDown('')
+    setDataSeatSub('')
 
     const current = new Date();
     const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
@@ -315,10 +426,16 @@ function Bookingticket() {
 
         let arrrr = [].concat(dataSeatUp, dataSeatDown, dataSeatSub)
 
+        let see = arrrr.filter(Boolean);
 
-        if (arrrr && arrrr.length > 0) {
+        console.log('ssssssssssssssssss', see)
 
-          arrrr.map(key => {
+
+
+
+        if (see && see.length > 0) {
+
+          see.map(key => {
             let seat = {};
             seat.bookingseatsId = id;
             seat.seatId = key;
@@ -453,7 +570,10 @@ function Bookingticket() {
 
   }
 
-
+  const today = new Date();
+  const numberOfDaysToAdd = 0;
+  const datenow = today.setDate(today.getDate() + numberOfDaysToAdd);
+  const defaultValue = new Date(datenow).toISOString().split('T')[0] // yyyy-mm-dd
   return (
     <>
       <Container fluid>
@@ -467,12 +587,11 @@ function Bookingticket() {
                     <Form.Label>Chọn ngày</Form.Label>
                     <Form.Control
                       type="date"
-
-
+                      defaultValue={defaultValue}
                       placeholder="Due date"
-                      value={date}
                       onChange={(e) => {
                         setDate(e.target.value)
+                        console.log('check', e.target.value)
                         getAllManageXes(e.target.value)
                       }
 
@@ -491,9 +610,12 @@ function Bookingticket() {
                     >
                       <option>Chọn xe muốn đặt</option>
                       {arrmanagexe && arrmanagexe.map((item, index) => {
-                        return (
-                          <option key={index} value={item.id}>{item.car.platesCar}</option>
-                        )
+                        if (item.status == 1) {
+
+                          return (
+                            <option key={index} value={item.id}>{item.car.platesCar}</option>
+                          )
+                        }
                       })
                       }
                     </Form.Select>
@@ -519,7 +641,7 @@ function Bookingticket() {
                       <th>nơi đi - nơi đến</th>
                       <th>số ghế</th>
 
-
+                      <th>action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -530,31 +652,58 @@ function Bookingticket() {
                           <td>{index + 1}</td>
                           <td>{item.name}</td>
                           <td>{item.sdt}</td>
-                          <td>{item.gia}</td>
+                          <td> <NumberFormat
+                            thousandSeparator={'.'}
+                            decimalSeparator={false}
+                            suffix={' đ'}
+                            value={item.gia}
+                            displayType={"text"}
+                          /></td>
                           <td>{item.createdAt}</td>
                           <td>{item.bienso}</td>
                           <td>{item.from}-{item.to}</td>
                           <td>{item.seatbook}</td>
+                          <td><button onClick={() => {
+                            setDataInve(item)
+                            handleShowve()
 
-
-                          {/* <td>
-                            <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
-                                <i className="fas fa-edit">
-                                </i></button>
-                            <button 
-                            className="btn-delete"
-                            onClick = {() =>{this.handleDelete(item)}}
+                          }}>In ve</button>
+                            <button className="btn-edit" onClick={() => { handleEdit(item) }} >
+                              <i className="fas fa-edit">
+                              </i></button>
+                            <button
+                              className="btn-delete"
+                              onClick={() => { handleDelete(item) }}
                             >
-                                <i 
-                            className="fas fa-trash">
-                                </i></button>
-                        </td> */}
+                              <i
+                                className="fas fa-trash">
+                              </i></button>
+                          </td>
                         </tr>
                       )
 
                     })
                     }
                   </tbody>
+
+                  <Modal size="lg" show={showve} onHide={handleCloseve}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>In vé</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Form>
+                        <Ticket
+                          dataInVe={dataInVe}
+                        />
+                      </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleCloseve}>
+                        Đóng
+                      </Button>
+
+                    </Modal.Footer>
+                  </Modal>
                 </Table>
 
                 <Modal show={show} onHide={handleClose}>
@@ -578,23 +727,29 @@ function Bookingticket() {
                         <Form.Control
                           type="number"
                           pattern="[0-9]{10}"
+                          placeholder="vd: 0332584857"
                           onChange={(e) => { setsdt(e.target.value) }}
                           required
                         ></Form.Control>
                       </Form.Group>
                       <Form.Group className="mb-3" controlId="exampleForm.ControlInputfrice">
                         <Form.Label>Giá vé hôm nay</Form.Label>
-                        <Form.Control
-                          type="number"
 
-                          placeholder="vd: 300000"
-                          defaultValue={frice}
-
-                          onChange={e => setfrice(e.target.value)}
-
-                        ></Form.Control>
+                        <NumberFormat
+                          thousandSeparator={'.'}
+                          decimalSeparator={false}
+                          suffix={' đ'}
+                          className="form-control"
+                          value={frice}
+                          onValueChange={values => {
+                            const { formattedValue, floatValue } = values;
+                            setfrice(floatValue)//bad code
+                          }}
+                          placeholder="vd: 100.000.000"
+                        />
                       </Form.Group>
                     </Form>
+
                   </Modal.Body>
 
                   <Modal.Footer>
@@ -606,6 +761,66 @@ function Bookingticket() {
                     </Button>
                   </Modal.Footer>
                 </Modal>
+
+
+
+
+
+
+
+                <Modal show={seditve} onHide={handleCloseseditve}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Đặt vé</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body  >
+
+                    <Form>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Tên khách hàng <p className="sao">*</p></Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="nhập tên ở đây"
+                          value={fName}
+                          onChange={e => setfName(e.target.value)}
+                          autoFocus required
+                        ></Form.Control>
+                      </Form.Group>
+                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Số điện thoại <p className="sao">*</p> </Form.Label>
+                        <Form.Control
+                          type="number"
+                          pattern="[0-9]{10}"
+                          placeholder="vd: 0332584857"
+                          value={sdt}
+
+                          onChange={(e) => { setsdt(e.target.value) }}
+                          required
+                        ></Form.Control>
+                      </Form.Group>
+
+                    </Form>
+
+                  </Modal.Body>
+
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseseditve}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={updateve}>
+                      Cập nhật
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+
+
+
+
+
+
+
+
+
 
                 <Modal show={showfr} onHide={handleClosefr}>
                   <Modal.Header closeButton>

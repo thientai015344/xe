@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLCar, getALLManageXe, createNewManageXe, getALLMap } from '../services/carSevice';
+import { getALLCar, getALLManageXe, createNewManageXe, getALLMap, editmanage } from '../services/carSevice';
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
-import { data } from "jquery";
 
 function ManageXe() {
 
-  const [showmanagecar, setShowmanagecar] = useState(false);
+
   const [datenox, setDate] = useState(new Date());
+  let initrangtai = 1;
+
+  const [trangthai, settrangthai] = useState(initrangtai)
 
   const [arrcarr, setarrcarr] = useState()
+  const [dateold, setdateold] = useState()
+  const [idmanage, setidmanage] = useState()
   const [arrmap, setarrmap] = useState()
 
   const [arrmanagexe, setarrmanagexep] = useState()
@@ -27,7 +31,7 @@ function ManageXe() {
 
 
 
-
+  const [showmanagecar, setShowmanagecar] = useState(false);
   const handleClosemanagecar = () => setShowmanagecar(false);
   const handleShowmanagecar = () => {
     setShowmanagecar(true);
@@ -36,6 +40,19 @@ function ManageXe() {
     getAllmaps();
 
   }
+
+
+
+  const [showmanagecaredit, setShowmanagecaredit] = useState(false);
+  const handleClosemanagecaredit = () => setShowmanagecaredit(false);
+  const handleShowmanagecaredit = () => {
+    setShowmanagecaredit(true);
+
+    getAllCars();
+    getAllmaps();
+
+  }
+
 
 
   const createNewManageXes = async (data) => {
@@ -78,6 +95,7 @@ function ManageXe() {
         date: datenox,
         carId: idcar,
         roadmapsId: idlacation,
+        status: trangthai,
         userId: userId,
       }
 
@@ -87,23 +105,74 @@ function ManageXe() {
 
 
 
-    // let managecar = {
-    //   date: datenox,
-    //   carId: idcar,
-    //   roadmapsId: idlacation,
-    //   userId: userId,
 
-
-
-    // }
-
-
-
-
-    // createNewManageXes(managecar);
 
 
   }
+
+
+
+
+  const handleEdit = async (manaeXe) => {
+
+    const str = manaeXe.date;
+
+    const [day, month, year] = str.split('-');
+
+    let adddd = year + '-' + month + '-' + day
+
+    if (adddd) {
+
+      await setdateold(adddd)
+    }
+
+
+    setidlacation(manaeXe.idmap)
+    setidcar(manaeXe.idcar)
+    setidmanage(manaeXe.id)
+
+
+    handleShowmanagecaredit();
+
+  }
+
+
+  const handleeditmanagecar = async () => {
+    let userId = sessionStorage.getItem("userId");
+    let managecar = {
+      id: idmanage,
+      date: datenox,
+      carId: idcar,
+      roadmapsId: idlacation,
+      status: trangthai,
+      userId: userId,
+    }
+    editmanaged(managecar);
+
+  }
+
+
+
+  const editmanaged = async (data) => {
+
+    try {
+      let response = await editmanage(data);
+      if (response && response.errCode !== 0) {
+        alert(' xa da ton tai ')
+      } else {
+
+        alert(' Chỉnh sửa thành công')
+        await getAllManageXes();
+
+        handleClosemanagecaredit();
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
 
 
 
@@ -113,7 +182,7 @@ function ManageXe() {
     getAllManageXes();
 
 
-  });
+  }, []);
 
 
   const getAllCars = async () => {
@@ -130,6 +199,9 @@ function ManageXe() {
     let response = await getALLManageXe('ALL')
     if (response && response.errCode === 0) {
 
+      console.log('mânge', response.manageCar)
+
+
       let convert = response.manageCar && response.manageCar.map(track => {
         let date = '';
 
@@ -142,7 +214,7 @@ function ManageXe() {
 
           date = arr[0].split("-").reverse().join("-");
         }
-        return { id: track.id, platesCar: track.car.platesCar, from: track.roadmap.from, to: track.roadmap.to, date: date }
+        return { id: track.id, idcar: track.car.id, status: track.status, platesCar: track.car.platesCar, idmap: track.roadmap.id, from: track.roadmap.from, to: track.roadmap.to, date: date }
       })
 
       setarrmanagexep(convert)
@@ -185,33 +257,51 @@ function ManageXe() {
                       <th>ngày</th>
                       <th>xe</th>
                       <th>tuyến đường</th>
+                      <th>Trạng thái</th>
+                      <th>Action</th>
 
 
                     </tr>
                   </thead>
                   <tbody>
                     {arrmanagexe && arrmanagexe.map((item, index) => {
-                      return (
-                        <tr key={index + 1}>
-                          <td>{index}</td>
-                          <td>{item.date}</td>
-                          <td>{item.platesCar}</td>
-                          <td>{item.from}-{item.to}</td>
 
-                          {/* <td>
-                            <button className="btn-edit"  onClick = {() =>{this.handleEdit(item)}} >
+                      if (item.status == 1) {
+                        return (
+                          <tr key={index + 1}>
+                            <td>{index}</td>
+                            <td>{item.date}</td>
+                            <td>{item.platesCar}</td>
+                            <td>{item.from}-{item.to}</td>
+                            <td>{'hiện'}</td>
+
+                            <td>
+                              <button className="btn-edit" onClick={() => { handleEdit(item) }} >
                                 <i className="fas fa-edit">
                                 </i></button>
-                            <button 
-                            className="btn-delete"
-                            onClick = {() =>{this.handleDelete(item)}}
-                            >
-                                <i 
-                            className="fas fa-trash">
+                            </td>
+                          </tr>
+                        )
+
+                      } else {
+                        return (
+                          <tr key={index + 1}>
+                            <td>{index}</td>
+                            <td>{item.date}</td>
+                            <td>{item.platesCar}</td>
+                            <td>{item.from}-{item.to}</td>
+                            <td>{'đã ẩn'}</td>
+
+                            <td>
+                              <button className="btn-edit" onClick={() => { handleEdit(item) }} >
+                                <i className="fas fa-edit">
                                 </i></button>
-                        </td> */}
-                        </tr>
-                      )
+                            </td>
+                          </tr>
+                        )
+                      }
+
+
 
                     })
                     }
@@ -253,9 +343,12 @@ function ManageXe() {
                         >
                           <option>Chon xe</option>
                           {arrcarr && arrcarr.map((item, index) => {
-                            return (
-                              <option key={index} value={item.id}>{item.platesCar}</option>
-                            )
+                            if (item.status == 1) {
+
+                              return (
+                                <option key={index} value={item.id}>{item.platesCar}</option>
+                              )
+                            }
                           })
                           }
                         </Form.Select>
@@ -291,6 +384,98 @@ function ManageXe() {
                     </Button>
                   </Modal.Footer>
                 </Modal>
+
+
+
+
+
+                <Modal show={showmanagecaredit} onHide={handleClosemanagecaredit}>
+                  <Modal.Header closeButton>
+                    <Modal.Title> Chỉnh sửa</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form>
+
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Chọn ngày</Form.Label>
+                        <Form.Control
+                          type="date"
+                          name="duedate"
+                          placeholder="Due date"
+                          defaultValue={dateold}
+                          onChange={(e) => setDate(e.target.value)}
+                        />
+                      </Form.Group>
+
+
+
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
+                        <Form.Select as="select"
+                          value={idcar}
+                          onChange={e => {
+                            setidcar(e.target.value);
+                          }} id="selectCar"
+                        >
+                          <option>Chon xe</option>
+                          {arrcarr && arrcarr.map((item, index) => {
+                            if (item.status == 1) {
+
+                              return (
+                                <option key={index} value={item.id}>{item.platesCar}</option>
+                              )
+                            }
+                          })
+                          }
+                        </Form.Select>
+                      </Form.Group>
+
+
+
+
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="disabledSelect">chọn địa điểm </Form.Label>
+                        <Form.Select as="select"
+                          value={idlacation}
+                          onChange={e => {
+                            setidlacation(e.target.value);
+                          }} id="disabledSelect">
+                          <option>chọn tuyến đường</option>
+                          {arrmap && arrmap.map((item, index) => {
+                            return (
+                              <option key={index} value={item.id}>{item.from}-{item.to}</option>
+                            )
+                          })
+                          }
+                        </Form.Select>
+                      </Form.Group>
+                      <Form.Group className="mb-3 col-6">
+                        <Form.Label htmlFor="checktrefalse">Trạng thái</Form.Label>
+                        <Form.Select id="checktrefalse"
+                          value={trangthai}
+                          onChange={e => {
+                            settrangthai(e.target.value);
+
+                          }}
+                        >
+                          <option  >Chọn trạng thái</option>
+                          <option value="1" >Hiện</option>
+                          <option value="0" >ẩn</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClosemanagecaredit}>
+                      Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleeditmanagecar}>
+                      Lưu
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
 
 
               </Card.Body>

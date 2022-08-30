@@ -43,6 +43,29 @@ const editCar = (data) => {
     return axios.put('/api/edit-Car', data);
 }
 
+const editmanage = (data) => {
+    return axios.put('/api/edit-manageCar', data);
+}
+
+
+const editphieuchi = (data) => {
+    return axios.put('/api/edit-commodity', data);
+}
+
+
+const editaddhang = (data) => {
+    return axios.put('/api/edit-consignment', data);
+}
+
+const editmap = (data) => {
+    return axios.put('/api/edit-roadmap', data);
+}
+
+const edidtbokkve = (data) => {
+    return axios.put('/api/edit-bookingseat', data);
+}
+
+
 
 const deletechi = (CarId) => {
     return axios.delete('/api/delete-commodity', {
@@ -143,10 +166,29 @@ const getveid = (inputId) => {
 }
 
 const getchithongke = (data) => {
-    console.log('check data', data)
-
-    return axios.get('/api/get-all-commoditydate', data);
+    return axios.post('/api/get-all-commoditydate', { ...data });
 }
+
+const getthuve = (data) => {
+    return axios.post('/api/get-all-thuve', { ...data });
+}
+
+const getthuhang = (data) => {
+    return axios.post('/api/get-all-thuhnag', { ...data });
+}
+
+const deletehnag = (CarId) => {
+    return axios.delete('/api/delete-consignment', {
+        data: { id: CarId }
+    });
+}
+
+const deletboking = (CarId) => {
+    return axios.delete('/api/delete-bookingseat', {
+        data: { id: CarId }
+    });
+}
+
 
 
 
@@ -174,4 +216,13 @@ export {
     deletechi,
     getchithongke,
     deletemap,
+    getthuve,
+    getthuhang,
+    deletehnag,
+    editmap,
+    editaddhang,
+    editphieuchi,
+    editmanage,
+    deletboking,
+    edidtbokkve,
 }
