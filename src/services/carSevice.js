@@ -173,12 +173,23 @@ const getthuve = (data) => {
     return axios.post('/api/get-all-thuve', { ...data });
 }
 
+const getmanagecon = (inputId) => {
+    return axios.get(`/api/get-all-manageCarcom?id=${inputId}`)
+}
+
 const getthuhang = (data) => {
     return axios.post('/api/get-all-thuhnag', { ...data });
 }
 
+
+
 const deletehnag = (CarId) => {
     return axios.delete('/api/delete-consignment', {
+        data: { id: CarId }
+    });
+}
+const deletemanage = (CarId) => {
+    return axios.delete('/api/delete-manageCar', {
         data: { id: CarId }
     });
 }
@@ -225,4 +236,6 @@ export {
     editmanage,
     deletboking,
     edidtbokkve,
+    deletemanage,
+    getmanagecon,
 }

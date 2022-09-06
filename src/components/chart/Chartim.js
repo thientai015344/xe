@@ -8,6 +8,8 @@ const Chsrtim = (props) => {
 
     const { arrayseatloop } = props;
 
+    console.log(arrayseatloop)
+
 
     useEffect(() => {
         let sum = 0;
@@ -54,7 +56,7 @@ const Chsrtim = (props) => {
             },
             {
                 label: 'Giá tiền ',
-                field: 'gia',
+                field: 'giacol',
                 sort: 'disabled',
                 width: 150,
             },

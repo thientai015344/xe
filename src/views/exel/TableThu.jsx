@@ -7,9 +7,9 @@ import NumberFormat from 'react-number-format';
 
 function TableThu(props) {
 
-    const { arrayseatloop, to, from } = props;
+    const { arrayseatloop, to, from, namecar } = props;
     const [total, setTotal] = useState(0);
-    console.log('hahaa', arrayseatloop)
+
 
     const current = new Date();
     const ngay = `${current.getDate()}-${current.getMonth() + 1}-${current.getFullYear()}`;
@@ -122,7 +122,7 @@ function TableThu(props) {
                         <td style={{ textAlign: "right" }}>
                             Xe:
                         </td>
-                        <td style={{ textAlign: "right", fontWeight: "600" }}></td>
+                        <td style={{ textAlign: "right", fontWeight: "600" }}>{namecar}</td>
                     </tr>
                     <tr style={{ height: "33px" }}>
                         <td className="s21"></td>

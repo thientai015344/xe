@@ -104,7 +104,7 @@ function Bookingticket() {
           }, [])
 
 
-          console.log('id', myArrayWithNoDuplicates)
+
 
           myArrayWithNoDuplicates && myArrayWithNoDuplicates.map(idd => {
 
@@ -125,7 +125,7 @@ function Bookingticket() {
   const getveids = async (idd) => {
 
     let response = await getveid(idd)
-    console.log('id sêt', response)
+
     if (response && response.errCode === 0) {
 
       let name = response.bookingseatxe[0].bookingseat.nameClient;
@@ -210,7 +210,6 @@ function Bookingticket() {
 
   const handleDelete = async (singer) => {
 
-    console.log('iddddddddd', singer)
     try {
       let res = await deletboking(singer.id)
       if (res && res.errCode === 0) {
@@ -258,7 +257,7 @@ function Bookingticket() {
 
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
-        console.log('hshss', response)
+
         setarrmanagexep(response.manageCar)
       }
     }
@@ -269,7 +268,7 @@ function Bookingticket() {
 
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
-        console.log('hshss', response)
+
         setarrmanagexep(response.manageCar)
       }
     }
@@ -330,7 +329,7 @@ function Bookingticket() {
 
 
   const getfromdatat = () => {
-    if (fName == '' || sdt == '' || frice == '') {
+    if (fName == '' || sdt == '') {
 
       alert('vui lòng nhập đầy đủ thông tin')
 
@@ -339,14 +338,13 @@ function Bookingticket() {
 
 
       let checksdt = isNumeric(sdt)
-      let checkfrice = isNumeric(frice)
 
 
       if (checksdt == false) {
         alert('Số điện thoại chưa đúng ')
-      }
-      else if (checkfrice == false) {
-        alert('Giá vé chưa đúng ')
+
+        // else if (checkfrice == false) {
+        //   alert('Giá vé chưa đúng ')
       } else {
 
         handleShowfr();
@@ -364,46 +362,24 @@ function Bookingticket() {
 
   const saveticket = () => {
 
-    setDataSeatUp('')
-    setDataSeatDown('')
-    setDataSeatSub('')
 
-    const current = new Date();
-    const ngay = `${current.getFullYear()}-${current.getMonth() + 1}-${current.getDate()}`;
-
-
-    let datecho = new Date(ngay);
-    let datenow = new Date(date);
-
-    if (datenow < datecho) {
-
-      alert('Không được chọn ngày nhỏ hơn ngày hiện tại')
+    if (!frice) {
+      alert('Chưa nhập số tiền số tiền không thể lưu  ')
     }
     else {
 
       let userId = sessionStorage.getItem("userId");
-      let arrrr = [].concat(dataSeatUp, dataSeatDown, dataSeatSub)
-
-      console.log(arrrr, userId)
-      let i = arrrr.length
-
-      let totli = frice * i
-
-
-
       let ticket = {
         nameClient: fName,
         phoneNumber: sdt,
-        price: totli,
+        price: frice,
         ManegeId: idmanage,
         userId: userId,
       }
-
       createNewtickets(ticket)
+
+
     }
-
-
-
   }
 
   function isNumeric(val) {
@@ -427,10 +403,6 @@ function Bookingticket() {
         let arrrr = [].concat(dataSeatUp, dataSeatDown, dataSeatSub)
 
         let see = arrrr.filter(Boolean);
-
-        console.log('ssssssssssssssssss', see)
-
-
 
 
         if (see && see.length > 0) {
@@ -463,6 +435,12 @@ function Bookingticket() {
 
             handleClosefr();
             getves(idmanage);
+
+            setDataSeatUp('')
+            setDataSeatDown('')
+            setDataSeatSub('')
+            setfrice('')
+
 
 
           }
@@ -551,21 +529,21 @@ function Bookingticket() {
   const handleGetDataSeatDown = (data) => {
     // setdataseatget(data)
     setDataSeatDown(data)
-    console.log('arrrrdow', data)
+
 
   }
 
 
   const handleGetDataSeatUp = (data) => {
     setDataSeatUp(data)
-    console.log('arrrrup', data)
+
 
 
   }
 
   const handleGetDataSeatSub = (data) => {
     setDataSeatSub(data)
-    console.log('arrrrsub', data)
+
 
 
   }
@@ -591,7 +569,7 @@ function Bookingticket() {
                       placeholder="Due date"
                       onChange={(e) => {
                         setDate(e.target.value)
-                        console.log('check', e.target.value)
+
                         getAllManageXes(e.target.value)
                       }
 
@@ -646,7 +624,7 @@ function Bookingticket() {
                   </thead>
                   <tbody>
                     {arrayseatloop && arrayseatloop.map((item, index) => {
-                      console.log('itemd', item)
+
                       return (
                         <tr key={index}>
                           <td>{index + 1}</td>
@@ -732,22 +710,7 @@ function Bookingticket() {
                           required
                         ></Form.Control>
                       </Form.Group>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInputfrice">
-                        <Form.Label>Giá vé hôm nay</Form.Label>
 
-                        <NumberFormat
-                          thousandSeparator={'.'}
-                          decimalSeparator={false}
-                          suffix={' đ'}
-                          className="form-control"
-                          value={frice}
-                          onValueChange={values => {
-                            const { formattedValue, floatValue } = values;
-                            setfrice(floatValue)//bad code
-                          }}
-                          placeholder="vd: 100.000.000"
-                        />
-                      </Form.Group>
                     </Form>
 
                   </Modal.Body>
@@ -827,6 +790,22 @@ function Bookingticket() {
                     <Modal.Title>Chọn Ghế</Modal.Title>
                   </Modal.Header>
                   <Modal.Body  >
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInputfrice">
+                      <Form.Label>Tổng tiền</Form.Label>
+
+                      <NumberFormat
+                        thousandSeparator={'.'}
+                        decimalSeparator={false}
+                        suffix={' đ'}
+                        className="form-control"
+                        value={frice}
+                        onValueChange={values => {
+                          const { formattedValue, floatValue } = values;
+                          setfrice(floatValue)//bad code
+                        }}
+                        placeholder="vd: 100.000.000"
+                      />
+                    </Form.Group>
 
                     <Form>
                       <ButtonGroup className="mb-2">

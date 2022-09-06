@@ -97,6 +97,7 @@ function Notifications() {
         alert(' xa da ton tai ')
       } else {
         alert(' Tạo phiếu chi thành công')
+        setdateinput(defaultValue);
         handleClosecar();
         await getchis();
       }
@@ -147,7 +148,6 @@ function Notifications() {
   const getAllCars = async () => {
     let response = await getALLCar('ALL')
     if (response && response.errCode === 0) {
-      console.log('ddd', response.cars)
 
       let convert = response.cars && response.cars.map(track => {
         let dateinput = '';
@@ -172,7 +172,6 @@ function Notifications() {
   const getchis = async () => {
     let response = await getchi('ALL')
     if (response && response.errCode === 0) {
-      console.log(response.commoditys)
       let dataget = response.commoditys.reverse();
 
 
@@ -196,7 +195,7 @@ function Notifications() {
 
   const handlecaredit = async (datachi) => {
 
-    console.log(datachi)
+
 
 
     const str = datachi.dateinput;

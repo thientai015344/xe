@@ -6,7 +6,6 @@ import Hang from "views/Hang";
 import Maps from "views/Maps.js";
 import ManageXe from "views/ManageXe";
 import Notifications from "views/Notifications.js";
-import ve from "./components/ticket/Ticket.js";
 
 
 const dashboardRoutes = [

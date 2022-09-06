@@ -7,9 +7,9 @@ import NumberFormat from 'react-number-format';
 
 function TableHang(props) {
 
-    const { arrhang, to, from } = props;
+    const { arrhang, to, from, namecar } = props;
     const [total, setTotal] = useState(0);
-    console.log('hahaa', arrhang)
+
 
     const current = new Date();
     const ngay = `${current.getDate()}-${current.getMonth() + 1}-${current.getFullYear()}`;
@@ -122,7 +122,7 @@ function TableHang(props) {
                         <td style={{ textAlign: "right" }}>
                             Xe:
                         </td>
-                        <td style={{ textAlign: "right", fontWeight: "600" }}></td>
+                        <td style={{ textAlign: "right", fontWeight: "600" }}>{namecar}</td>
                     </tr>
                     <tr style={{ height: "33px" }}>
                         <td className="s21"></td>

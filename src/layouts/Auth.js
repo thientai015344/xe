@@ -31,7 +31,6 @@ function Admin() {
 
       let data = await handleLoginApi(usernamea, passwordw)
 
-      console.log('SSSS', data)
 
       if (data && data.errCode !== 0) {
         seterrMessage(data.message)
@@ -41,8 +40,6 @@ function Admin() {
 
 
         sessionStorage.setItem('userId', data.user.id)
-
-        console.log('login successfully', sessionStorage.getItem('userId'))
         history.push("/")
       }
 

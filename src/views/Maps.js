@@ -188,7 +188,6 @@ function Maps() {
                   </thead>
                   <tbody>
                     {arrmap && arrmap.map((item, index) => {
-                      console.log('iem', item)
                       return (
                         <tr key={index}>
                           <td>{index + 1}</td>

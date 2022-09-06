@@ -7,7 +7,7 @@ const ChartHnag = (props) => {
 
     const { arrhang } = props;
 
-    console.log('hahak', arrhang)
+
 
     useEffect(() => {
         let sum = 0;
@@ -54,7 +54,7 @@ const ChartHnag = (props) => {
             },
             {
                 label: 'Giá tiền ',
-                field: 'gia',
+                field: 'friceformate',
                 sort: 'disabled',
                 width: 150,
             },

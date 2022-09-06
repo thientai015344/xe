@@ -50,7 +50,7 @@ function Hang() {
 
 
   const handleEdit = async (hang) => {
-    console.log('djaeeeeeeehd', hang)
+
     const str = hang.date;
 
     const [day, month, year] = str.split('-');
@@ -181,7 +181,7 @@ function Hang() {
     else {
 
       let df = xeww + "T00:00:00.000Z"
-      console.log('djaeeeeeeehd', df)
+
 
       let response = await getALLManageXe(df)
       if (response && response.errCode === 0) {
@@ -201,18 +201,11 @@ function Hang() {
 
 
   const getAllsignment = async (e) => {
-
-    console.log('fff', e)
-
-
-
     if (!e) {
-
-
       let response = await getAllsignments('ALL')
       if (response && response.errCode === 0) {
         let data = response.consignments.reverse();
-        console.log('fafaa', data)
+
         let convert = data && data.map(track => {
           let date = '';
 
@@ -222,7 +215,8 @@ function Hang() {
             let arr = num.toString().split("T")
             date = arr[0].split("-").reverse().join("-");
           }
-          return { id: track.id, idcar: track.carhangId, idhang: track.typecommoditiesId, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, nametypecommodities: track.typecommodity.nametypecommodities }
+          return { id: track.id, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, carname: track.managecar.car.platesCar }
+
         })
 
         setarrguihang(convert)
@@ -233,12 +227,11 @@ function Hang() {
     }
     else {
       let df = e + "T00:00:00.000Z"
-      console.log('djaeeeeeeehd', df)
-
       let response = await getAllsignments(df)
       if (response && response.errCode === 0) {
+        let data = response.consignments.reverse();
 
-        let convert = response.consignments && response.consignments.map(track => {
+        let convert = data && data.map(track => {
           let date = '';
 
           if (track.date) {
@@ -246,11 +239,9 @@ function Hang() {
             let num = track.date
             let arr = num.toString().split("T")
 
-            console.log(arr[0])
-
             date = arr[0].split("-").reverse().join("-");
           }
-          return { id: track.id, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, nametypecommodities: track.typecommodity.nametypecommodities }
+          return { id: track.id, name: track.name, nameUserGet: track.nameUserGet, nameUserSend: track.nameUserSend, date: date, phonenumberUserGet: track.phonenumberUserGet, phonenumberUserSend: track.phonenumberUserSend, price: track.price, carname: track.managecar.car.platesCar }
         })
 
         setarrguihang(convert)
@@ -336,7 +327,7 @@ function Hang() {
     }
   }
   const editsenthang = async () => {
-    console.log('datagupdate', dategui)
+
 
     let userId = sessionStorage.getItem("userId");
     let edithang = {
@@ -456,8 +447,8 @@ function Hang() {
                     <tr>
 
                       <th>Ngày gửi</th>
+                      <th>Xe gửi</th>
                       <th>Tên hàng</th>
-                      <th>loại hàng</th>
                       <th>giá gửi</th>
                       <th>người gửi </th>
                       <th>sdt</th>
@@ -470,11 +461,12 @@ function Hang() {
                   </thead>
                   <tbody>
                     {arrguihang && arrguihang.map((item, index) => {
+
                       return (
                         <tr key={index + 1}>
                           <td>{item.date}</td>
+                          <td>{item.carname}</td>
                           <td>{item.name}</td>
-                          <td>{item.nametypecommodities}</td>
                           <td> <NumberFormat
                             thousandSeparator={'.'}
                             decimalSeparator={false}
@@ -574,9 +566,13 @@ function Hang() {
                           >
                             <option>Chọn xe gửi</option>
                             {arrxehang && arrxehang.map((item, index) => {
-                              return (
-                                <option key={index} value={item.id}>{item.car.platesCar}</option>
-                              )
+
+                              if (item.status === 1) {
+                                return (
+                                  <option key={index} value={item.id} >{item.car.platesCar}</option>
+                                )
+                              }
+
                             })
                             }
                           </Form.Select>
@@ -721,10 +717,15 @@ function Hang() {
                           >
                             <option>Chọn xe gửi</option>
                             {arrxehang && arrxehang.map((item, index) => {
-                              return (
 
-                                <option key={index} value={item.id} >{item.car.platesCar}</option>
-                              )
+                              if (item.status === 1) {
+
+                                return (
+
+                                  <option key={index} value={item.id} >{item.car.platesCar}</option>
+                                )
+                              }
+
                             })
                             }
                           </Form.Select>

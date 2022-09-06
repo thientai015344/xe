@@ -8,7 +8,7 @@ import NumberFormat from 'react-number-format';
 const Ticket = (props) => {
 
     const { dataInVe } = props;
-    console.log(">>> check : dataInVe", dataInVe)
+
 
     const componentRef = useRef();
     const pageStyle = `{ size: 3.8in 5.3in }`;

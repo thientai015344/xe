@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/_customModal.scss";
-import { getALLCar, getALLManageXe, createNewManageXe, getALLMap, editmanage } from '../services/carSevice';
+import { getALLCar, getALLManageXe, createNewManageXe, getALLMap, editmanage, deletemanage, getmanagecon } from '../services/carSevice';
 // react-bootstrap components
 import { Card, Container, Table, Row, Col, Button, Modal, Form } from "react-bootstrap";
 
@@ -9,35 +9,50 @@ function ManageXe() {
 
   const [datenox, setDate] = useState(new Date());
   let initrangtai = 1;
-
   const [trangthai, settrangthai] = useState(initrangtai)
-
   const [arrcarr, setarrcarr] = useState()
   const [dateold, setdateold] = useState()
   const [idmanage, setidmanage] = useState()
+  const [dataa, setdataa] = useState()
+
   const [arrmap, setarrmap] = useState()
-
   const [arrmanagexe, setarrmanagexep] = useState()
-
-
-
   const [idlacation, setidlacation] = useState()
-
   const [idcar, setidcar] = useState()
-
-
-
-
-
-
-
   const [showmanagecar, setShowmanagecar] = useState(false);
   const handleClosemanagecar = () => setShowmanagecar(false);
+
   const handleShowmanagecar = () => {
     setShowmanagecar(true);
-
     getAllCars();
     getAllmaps();
+
+  }
+
+
+
+
+  const handleDelete = async (singer) => {
+
+
+    try {
+      let res = await deletemanage(singer.id)
+      if (res && res.errCode === 0) {
+
+        await getAllManageXes()
+
+        alert('Xóa Thành Công')
+
+      }
+      else {
+        alert(res.errMessage)
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
 
   }
 
@@ -62,7 +77,8 @@ function ManageXe() {
         alert('đã có lỗi xảy ra ')
       } else {
         handleClosemanagecar();
-        await getAllManageXes();
+        await getmanagecons();
+        setDate(new Date())
 
       }
       handleClosemanagecar();
@@ -162,9 +178,11 @@ function ManageXe() {
       } else {
 
         alert(' Chỉnh sửa thành công')
-        await getAllManageXes();
+        await getmanagecons();
 
         handleClosemanagecaredit();
+        setDate(new Date())
+
       }
 
     } catch (error) {
@@ -174,13 +192,9 @@ function ManageXe() {
   }
 
 
-
-
-
   useEffect(() => {
 
-    getAllManageXes();
-
+    getmanagecons();
 
   }, []);
 
@@ -198,29 +212,39 @@ function ManageXe() {
   const getAllManageXes = async () => {
     let response = await getALLManageXe('ALL')
     if (response && response.errCode === 0) {
-
-      console.log('mânge', response.manageCar)
-
-
       let convert = response.manageCar && response.manageCar.map(track => {
         let date = '';
-
         if (track.date) {
-
           let num = track.date
           let arr = num.toString().split("T")
-
-
-
           date = arr[0].split("-").reverse().join("-");
         }
         return { id: track.id, idcar: track.car.id, status: track.status, platesCar: track.car.platesCar, idmap: track.roadmap.id, from: track.roadmap.from, to: track.roadmap.to, date: date }
       })
-
       setarrmanagexep(convert)
-
     }
   }
+
+
+
+
+  const getmanagecons = async () => {
+    let response = await getmanagecon(trangthai)
+    if (response && response.errCode === 0) {
+      let convert = response.manageCar && response.manageCar.map(track => {
+        let date = '';
+        if (track.date) {
+          let num = track.date
+          let arr = num.toString().split("T")
+          date = arr[0].split("-").reverse().join("-");
+        }
+        return { id: track.id, idcar: track.car.id, status: track.status, platesCar: track.car.platesCar, idmap: track.roadmap.id, from: track.roadmap.from, to: track.roadmap.to, date: date }
+      })
+      setarrmanagexep(convert)
+    }
+  }
+
+
 
   const getAllmaps = async () => {
     let response = await getALLMap('ALL')
@@ -242,11 +266,15 @@ function ManageXe() {
             <Card>
               <Card.Header>
                 <Card.Title as="h4">Danh sách xe đang hoạt động</Card.Title>
+                <div className="d-flex">
+                  <Button variant="primary" size="sm" onClick={handleShowmanagecar} active>
+                    Lên lịch xe
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={() => { getAllManageXes() }} active>
+                    Hện tất cả
+                  </Button>
+                </div>
 
-
-                <Button variant="primary" size="sm" onClick={handleShowmanagecar} active>
-                  Lên lịch xe
-                </Button>
 
               </Card.Header>
               <Card.Body className="all-icons">
@@ -279,6 +307,13 @@ function ManageXe() {
                               <button className="btn-edit" onClick={() => { handleEdit(item) }} >
                                 <i className="fas fa-edit">
                                 </i></button>
+                              <button
+                                className="btn-delete"
+                                onClick={() => { handleDelete(item) }}
+                              >
+                                <i
+                                  className="fas fa-trash">
+                                </i></button>
                             </td>
                           </tr>
                         )
@@ -295,6 +330,13 @@ function ManageXe() {
                             <td>
                               <button className="btn-edit" onClick={() => { handleEdit(item) }} >
                                 <i className="fas fa-edit">
+                                </i></button>
+                              <button
+                                className="btn-delete"
+                                onClick={() => { handleDelete(item) }}
+                              >
+                                <i
+                                  className="fas fa-trash">
                                 </i></button>
                             </td>
                           </tr>

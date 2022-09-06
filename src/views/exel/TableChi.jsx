@@ -6,7 +6,9 @@ import NumberFormat from 'react-number-format';
 
 function TableChi(props) {
 
-    const { arrchi, from, to } = props;
+    const { arrchi, from, to, namecar } = props;
+
+    console.log('ff', namecar)
     const [total, setTotal] = useState(0);
 
     const current = new Date();
@@ -30,15 +32,15 @@ function TableChi(props) {
     return (
         <div className="App">
             <ReactHTMLTableToExcel
-                id="test-table-xls-button"
-                className="download-table-xls-button"
-                table="table-to-xls"
+                id="test-table-xlsx-button"
+                className="download-table-xlsx-button"
+                table="table-to-xlsx"
                 filename={"xuat ngay" + ngay}
                 sheet="data chi"
                 buttonText="Xuất Excel"
             />
             <table
-                id="table-to-xls"
+                id="table-to-xlsx"
                 className="hide"
             >
                 <tbody >
@@ -119,7 +121,7 @@ function TableChi(props) {
                         <td style={{ textAlign: "right" }}>
                             Xe:
                         </td>
-                        <td style={{ textAlign: "right", fontWeight: "600" }}></td>
+                        <td style={{ textAlign: "right", fontWeight: "600" }}>{namecar}</td>
                     </tr>
                     <tr style={{ height: "33px" }}>
                         <td className="s21"></td>

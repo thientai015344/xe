@@ -48,29 +48,29 @@ function Cars() {
 
   }
 
-  // const handleDelete = async (singer) => {
+  const handleDelete = async (singer) => {
 
 
-  //   try {
-  //     let res = await deleteCar(singer.id)
-  //     if (res && res.errCode === 0) {
+    try {
+      let res = await deleteCar(singer.id)
+      if (res && res.errCode === 0) {
 
-  //       await getAllCars()
+        await getAllCars()
 
-  //       alert('Xóa Thành Công')
+        alert('Xóa Thành Công')
 
-  //     }
-  //     else {
-  //       alert(res.errMessage)
-  //     }
+      }
+      else {
+        alert(res.errMessage)
+      }
 
-  //   } catch (error) {
-  //     console.log(error);
+    } catch (error) {
+      console.log(error);
 
-  //   }
+    }
 
 
-  // }
+  }
 
 
 
@@ -81,7 +81,7 @@ function Cars() {
   const handleCreatecar = () => {
 
     if (car !== '') {
-      console.log('cAR', car)
+
       let ccar = {
         platesCar: car,
         status: trangthai
@@ -213,7 +213,7 @@ function Cars() {
                   </thead>
                   <tbody>
                     {arrcar && arrcar.map((item, index) => {
-                      console.log('itemd', item.trangthai)
+
                       if (item.trangthai == 1) {
                         return (
                           <tr key={index + 1}>
@@ -224,6 +224,13 @@ function Cars() {
                             <td>
                               <button className="btn-edit" onClick={() => { handlecaredit(item) }} >
                                 <i className="fas fa-edit">
+                                </i></button>
+                              <button
+                                className="btn-delete"
+                                onClick={() => { handleDelete(item) }}
+                              >
+                                <i
+                                  className="fas fa-trash">
                                 </i></button>
                             </td>
                           </tr>
@@ -238,6 +245,13 @@ function Cars() {
                             <td>
                               <button className="btn-edit" onClick={() => { handlecaredit(item) }} >
                                 <i className="fas fa-edit">
+                                </i></button>
+                              <button
+                                className="btn-delete"
+                                onClick={() => { handleDelete(item) }}
+                              >
+                                <i
+                                  className="fas fa-trash">
                                 </i></button>
 
 

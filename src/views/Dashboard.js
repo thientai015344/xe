@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Chartim from "components/chart/Chartim";
 import ChartHnag from "components/chart/Charthnag";
 
 import { Card, Container, Row, Col, Button, ButtonGroup, Form } from "react-bootstrap";
 import Chartex from "components/chart/Chartex";
-import { getchithongke, getthuve, getveid, getthuhang } from "services/carSevice";
+import { getchithongke, getALLCar, getthuve, getveid, getthuhang } from "services/carSevice";
 import TableChi from "./exel/TableChi";
 import TableThu from "./exel/TableThu";
 import TableHang from "./exel/TableHang";
-
-
+import NumberFormat from 'react-number-format';
 import '../assets/css/dasbo.css'
+
 
 
 function Dashboard() {
   const [arrayseatloop, setarrayseatloop] = useState([])
+
+  const [arrcar, setarrcar] = useState()
+  const [idcar, setidcar] = useState()
+  const [namecar, setnamecar] = useState()
+
+
+
 
   const [datefrom, setdatefrom] = useState()
   const [dateto, setdateto] = useState()
@@ -45,6 +52,7 @@ function Dashboard() {
       let to = dateto + "T00:00:00.000Z"
       seat.from = from;
       seat.to = to;
+      seat.id = idcar;
     }
     await getIdves(seat)
     // setdataseat(data)
@@ -76,7 +84,7 @@ function Dashboard() {
             }
             return accumulator
           }, [])
-          console.log('id CHUOI', myArrayWithNoDuplicates)
+
           myArrayWithNoDuplicates && myArrayWithNoDuplicates.map(idd => {
             if (idd) {
               getveids(idd)
@@ -91,6 +99,22 @@ function Dashboard() {
   }
 
 
+  const getAllCars = async () => {
+    let response = await getALLCar('ALL')
+    if (response && response.errCode === 0) {
+
+      let convert = response.cars && response.cars.map(track => {
+
+        return { id: track.id, platesCar: track.platesCar }
+
+      })
+
+      setarrcar(convert);
+
+    }
+  }
+
+
   const getveids = async (idd) => {
 
     let response = await getveid(idd)
@@ -100,6 +124,13 @@ function Dashboard() {
       let name = response.bookingseatxe[0].bookingseat.nameClient;
       let sdt = response.bookingseatxe[0].bookingseat.phoneNumber;
       let gia = response.bookingseatxe[0].bookingseat.price;
+      let giacol = <NumberFormat
+        thousandSeparator={'.'}
+        decimalSeparator={false}
+        suffix={' VNĐ'}
+        value={response.bookingseatxe[0].bookingseat.price}
+        displayType={"text"}
+      />
       let ngaydi = response.bookingseatxe[0].bookingseat.managecar.date;
       let bienso = response.bookingseatxe[0].bookingseat.managecar.car.platesCar;
       let from = response.bookingseatxe[0].bookingseat.managecar.roadmap.from;
@@ -125,6 +156,7 @@ function Dashboard() {
         seat.bienso = bienso;
         seat.from = from;
         seat.to = to;
+        seat.giacol = giacol;
         seat.seatbook = dataseatf;
 
         await setarrayseatloop((arrayseatloop) => [...arrayseatloop, seat])
@@ -133,6 +165,12 @@ function Dashboard() {
       }
     }
   }
+  useEffect(() => {
+
+    getAllCars();
+
+
+  }, []);
 
 
 
@@ -147,13 +185,15 @@ function Dashboard() {
 
       seat.from = from;
       seat.to = to;
+      seat.id = idcar
+
 
 
 
     }
     await getthuhangs(seat)
     setActive(event.target.id);
-    console.log('ddssdfbsjdfnsdfsd')
+
     setSeatMode('charhang');
     // setdataseat(data)
 
@@ -161,21 +201,25 @@ function Dashboard() {
 
   const getthuhangs = async (data) => {
 
+
     try {
       let response = await getthuhang(data);
 
       if (response && response.errCode !== 0) {
         alert('Có lỗi phía server ')
       } else {
+        console.log('check data hnag thong ke', response.commoditys)
 
         let datachi = response.commoditys.reverse();
-        console.log('hangd', datachi)
+
 
         let sum = 0;
+
         let convert = datachi && datachi.map(track => {
 
           sum += +track.price;
           let datedd = '';
+          let friceformate = '';
 
           if (track.date) {
 
@@ -183,20 +227,20 @@ function Dashboard() {
             let arr = num.toString().split("T")
             datedd = arr[0].split("-").reverse().join("-");
           }
-          return { platesCar: track.managecar.car.platesCar, namehang: track.name, nameuser: track.nameUserSend, sdt: track.phonenumberUserSend, gia: track.price, date: datedd }
+
+          if (track.price) {
+            friceformate = <NumberFormat
+              thousandSeparator={'.'}
+              decimalSeparator={false}
+              suffix={' VNĐ'}
+              value={track.price}
+              displayType={"text"}
+            />
+          }
+
+          return { platesCar: track.managecar.car.platesCar, namehang: track.name, nameuser: track.nameUserSend, friceformate: friceformate, sdt: track.phonenumberUserSend, gia: track.price, date: datedd }
         })
-
-
-
-
-
         await setarrhang(convert)
-
-
-
-
-
-
       }
 
 
@@ -217,13 +261,13 @@ function Dashboard() {
 
       seat.from = from;
       seat.to = to;
+      seat.id = idcar;
 
 
 
     }
     await getchithongkes(seat)
     setActive(event.target.id);
-    console.log('ddssdfbsjdfnsdfsd')
     setSeatMode('charex');
     // setdataseat(data)
 
@@ -243,6 +287,7 @@ function Dashboard() {
 
           sum += +track.price;
           let datedd = '';
+          let giaformate = '';
 
           if (track.dateinput) {
 
@@ -250,7 +295,16 @@ function Dashboard() {
             let arr = num.toString().split("T")
             datedd = arr[0].split("-").reverse().join("-");
           }
-          return { platesCar: track.car.platesCar, title: track.descriptioncommodities, gia: track.price, date: datedd }
+          if (track.price) {
+            giaformate = <NumberFormat
+              thousandSeparator={'.'}
+              decimalSeparator={false}
+              suffix={' VNĐ'}
+              value={track.price}
+              displayType={"text"}
+            />
+          }
+          return { platesCar: track.car.platesCar, giaformate: giaformate, title: track.descriptioncommodities, gia: track.price, date: datedd }
         })
 
         setSumchi(sum);
@@ -268,6 +322,14 @@ function Dashboard() {
 
   }
 
+  let gettextselete = (e) => {
+
+    var selectedOption = e.target.selectedOptions[0];
+
+    setnamecar(selectedOption.text); // TEXT
+
+  }
+
 
   return (
     <>
@@ -282,7 +344,7 @@ function Dashboard() {
 
 
                 <Form className="d-flex">
-                  <Form.Group className="mb-3 col-6">
+                  <Form.Group className="mb-3 col-4">
                     <Form.Label>Từ ngày</Form.Label>
                     <Form.Control
                       type="date"
@@ -294,7 +356,7 @@ function Dashboard() {
                     />
                   </Form.Group>
 
-                  <Form.Group className="mb-3 col-6">
+                  <Form.Group className="mb-3 col-4">
                     <Form.Label>Tới ngày</Form.Label>
                     <Form.Control
                       type="date"
@@ -309,6 +371,25 @@ function Dashboard() {
 
                       }
                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3 col-4 ">
+                    <Form.Label htmlFor="selectCar">Chọn xe</Form.Label>
+                    <Form.Select id="selectCar"
+
+                      onChange={e => {
+                        gettextselete(e);
+                        setidcar(e.target.value);
+
+                      }}
+                    >
+                      <option>Chọn xe </option>
+                      {arrcar && arrcar.map((item, index) => {
+                        return (
+                          <option key={index} value={item.id}>{item.platesCar}</option>
+                        )
+                      })
+                      }
+                    </Form.Select>
                   </Form.Group>
                 </Form>
 
@@ -360,6 +441,8 @@ function Dashboard() {
             arrchi={arrchi}
             to={dateto}
             from={datefrom}
+            namecar={namecar}
+
           />
         )}
 
@@ -369,6 +452,8 @@ function Dashboard() {
             arrhang={arrhang}
             to={dateto}
             from={datefrom}
+            namecar={namecar}
+
           />
 
 
@@ -380,6 +465,7 @@ function Dashboard() {
             arrayseatloop={arrayseatloop}
             to={dateto}
             from={datefrom}
+            namecar={namecar}
           />
 
 

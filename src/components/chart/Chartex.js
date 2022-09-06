@@ -5,7 +5,7 @@ const Chartex = (props) => {
 
     const { arrchi } = props;
 
-    console.log('checkarrchi', arrchi)
+
 
     const [d, setD] = useState({
         columns: [
@@ -28,7 +28,7 @@ const Chartex = (props) => {
             },
             {
                 label: 'Tiền chi',
-                field: 'gia',
+                field: 'giaformate',
                 sort: 'disabled',
                 width: 150,
             },
